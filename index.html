@@ -23,7 +23,7 @@
             padding: 16px; 
             color: var(--text-main); 
             padding-bottom: 70px; 
-            font-size: 17px;
+            font-size: 17px; 
             -webkit-font-smoothing: antialiased; 
         }
 
@@ -410,7 +410,7 @@
             const response = await fetch(url, options);
             if (response.status === 401) {
                 logout();
-                throw new Error("Unauthorized");
+                throw new Error("פג תוקף החיבור, אנא התחברי מחדש");
             }
             return response;
         }
@@ -574,7 +574,8 @@
             
             const now = new Date();
             let filtered = rawHistoryData.filter(item => {
-                const itemDate = new Date(item.date);
+                const safeDateStr = String(item.date).replace(' ', 'T');
+                const itemDate = new Date(safeDateStr);
                 const diffTime = now - itemDate;
                 const diffDays = diffTime / (1000 * 60 * 60 * 24);
                 if (filterValue === 'week') return diffDays <= 7;
@@ -592,8 +593,9 @@
             filtered.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'history-card';
-                const dateObj = new Date(item.date);
-                const formattedDate = dateObj.toLocaleDateString('he-IL') + ' ' + dateObj.toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'});
+                const safeDateStr = String(item.date).replace(' ', 'T');
+                const dateObj = new Date(safeDateStr);
+                const formattedDate = isNaN(dateObj.getTime()) ? item.date : dateObj.toLocaleDateString('he-IL') + ' ' + dateObj.toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'});
 
                 let logsHtml = '<ul style="margin: 0; padding-right: 20px;">';
                 item.logs.forEach(log => {
@@ -679,7 +681,8 @@
 
         function addExerciseInputRow(data = null) {
             const container = document.getElementById('exercises-inputs-container');
-            const rowId = Date.now() + Math.random();
+            const rowBox = document.createElement('div');
+            rowBox.className = 'exercise-form-box';
             
             const nameVal = data ? data.exercise_name : '';
             const equipVal = data ? data.equipment_type : 'BODYWEIGHT';
@@ -689,10 +692,7 @@
             const setsVal = data ? data.prescribed_sets : 3;
             const isTime = data && data.target_type === 'time';
 
-            const box = document.createElement('div');
-            box.className = 'exercise-form-box';
-            box.id = `row-${rowId}`;
-            box.innerHTML = `
+            rowBox.innerHTML = `
                 <div class="form-group" style="margin-bottom: 10px;">
                     <label>שם התרגיל</label>
                     <input type="text" class="ex-name" placeholder="שם התרגיל" value="${nameVal}" autocomplete="off">
@@ -731,9 +731,10 @@
                         <input type="number" class="ex-sets" value="${setsVal}" min="1" step="1">
                     </div>
                 </div>
-                <button type="button" class="btn btn-danger" onclick="document.getElementById('row-${rowId}').remove()" style="margin: 0;">מחק תרגיל</button>
+                <button type="button" class="btn btn-danger btn-delete-row" style="margin: 0;">מחק תרגיל</button>
             `;
-            container.appendChild(box);
+            rowBox.querySelector('.btn-delete-row').onclick = () => rowBox.remove();
+            container.appendChild(rowBox);
         }
 
         async function showEditRoutineView(routineId) {
@@ -755,7 +756,9 @@
 
         function addEditExerciseInputRow(data = null) {
             const container = document.getElementById('edit-exercises-inputs-container');
-            const rowId = Date.now() + Math.random();
+            const rowBox = document.createElement('div');
+            rowBox.className = 'exercise-form-box';
+            
             const nameVal = data ? data.exercise_name : '';
             const equipVal = data ? data.equipment_type : 'BODYWEIGHT';
             const stepVal = data ? data.increment_step : 0;
@@ -764,10 +767,7 @@
             const setsVal = data ? data.prescribed_sets : 3;
             const isTime = data && data.target_type === 'time';
 
-            const box = document.createElement('div');
-            box.className = 'exercise-form-box';
-            box.id = `edit-row-${rowId}`;
-            box.innerHTML = `
+            rowBox.innerHTML = `
                 <div class="form-group" style="margin-bottom: 10px;">
                     <label>שם התרגיל</label>
                     <input type="text" class="ex-name" placeholder="שם התרגיל" value="${nameVal}" autocomplete="off">
@@ -806,9 +806,10 @@
                         <input type="number" class="ex-sets" value="${setsVal}" min="1" step="1">
                     </div>
                 </div>
-                <button type="button" class="btn btn-danger" onclick="document.getElementById('edit-row-${rowId}').remove()" style="margin: 0;">מחק תרגיל</button>
+                <button type="button" class="btn btn-danger btn-delete-row" style="margin: 0;">מחק תרגיל</button>
             `;
-            container.appendChild(box);
+            rowBox.querySelector('.btn-delete-row').onclick = () => rowBox.remove();
+            container.appendChild(rowBox);
         }
 
         async function saveEditedRoutine() {
@@ -902,26 +903,19 @@
                 const resRoutine = await apiFetch('/api/routines', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, description: '' })
+                    body: JSON.stringify({ name: name, description: '', exercises: exercisesList })
                 });
                 
                 if(!resRoutine.ok) {
-                    const err = await resRoutine.json();
-                    return alert(err.detail || 'שגיאה ביצירת האימון');
+                    let errorMsg = 'שגיאה ביצירת האימון';
+                    try {
+                        const err = await resRoutine.json();
+                        if (typeof err.detail === 'string') errorMsg = err.detail;
+                        else if (Array.isArray(err.detail) && err.detail[0] && err.detail[0].msg) errorMsg = err.detail[0].msg;
+                    } catch(e) {}
+                    return alert(errorMsg);
                 }
 
-                const routineData = await resRoutine.json();
-                for(let ex of exercisesList) {
-                    const addRes = await apiFetch(`/api/routine/${routineData.id}/add_custom_exercise`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(ex)
-                    });
-                    if(!addRes.ok) {
-                        const errAdd = await addRes.json();
-                        throw new Error(errAdd.detail || 'שגיאה בהוספת תרגיל');
-                    }
-                }
                 alert('האימון נוצר בהצלחה!');
                 loadDashboard();
             } catch (e) { alert(e.message || 'שגיאת תקשורת בשרת'); }
@@ -1062,7 +1056,6 @@
             }
         }
 
-        // טעינה ראשונית של האפליקציה
         window.onload = initApp;
     </script>
 </body>

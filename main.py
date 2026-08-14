@@ -66,7 +66,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: Connection = Dep
 # --- App Lifecycle ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # הסרנו את force=True כדי שהנתונים שלך יישמרו לתמיד ולא ימחקו כשהשרת מתעורר!
     init_db()  
     with engine_connect() as conn:
         seed_demo_data(conn) 
@@ -127,6 +126,28 @@ class NextWorkoutOut(BaseModel):
     routine_name: str
     exercises: list[ExercisePrescriptionOut]
 
+class CustomExerciseAdd(BaseModel):
+    exercise_name: str
+    equipment_type: str
+    increment_step: float
+    prescribed_weight: float
+    prescribed_reps_target: int
+    prescribed_sets: int
+    target_type: Optional[str] = "reps"
+
+class RoutineCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    exercises: list[CustomExerciseAdd] = []
+
+class RoutineUpdate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    exercises: list[CustomExerciseAdd]
+
+class RoutineDeleteBatch(BaseModel):
+    routine_ids: list[int]
+
 # --- Helper Functions ---
 def _fetch_routine(conn: Connection, routine_id: int, user_id: int) -> dict:
     row = conn.execute(
@@ -134,7 +155,7 @@ def _fetch_routine(conn: Connection, routine_id: int, user_id: int) -> dict:
         {"id": routine_id, "uid": user_id},
     ).mappings().first()
     if row is None:
-        raise HTTPException(status_code=404, detail=f"Routine not found or access denied")
+        raise HTTPException(status_code=404, detail="Routine not found or access denied")
     return dict(row)
 
 def _fetch_routine_exercises(conn: Connection, routine_id: int) -> list[dict]:
@@ -172,7 +193,7 @@ def _fetch_last_session_result(conn: Connection, routine_exercise_id: int, reps_
     rpe_values = [row["rpe_score"] for row in set_logs if row["rpe_score"] is not None]
     avg_rpe = sum(rpe_values) / len(rpe_values) if rpe_values else 10.0
     hit_rep_target = all(row["reps_performed"] >= reps_target for row in set_logs)
-    session_date = datetime.strptime(latest_session["started_at"], "%Y-%m-%d %H:%M:%S").date()
+    session_date = datetime.strptime(latest_session["started_at"].replace("T", " ")[:19], "%Y-%m-%d %H:%M:%S").date()
 
     return SessionResult(session_date=session_date, difficulty=Difficulty.from_rpe(avg_rpe), hit_rep_target=hit_rep_target)
 
@@ -190,7 +211,7 @@ def read_root():
     html_path = Path(__file__).parent / "index.html"
     return html_path.read_text(encoding="utf-8")
 
-# --- API Routes (Secured) ---
+# --- API Routes ---
 @app.get("/routine/{routine_id}/next_workout", response_model=NextWorkoutOut)
 def get_next_workout(routine_id: int, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)) -> NextWorkoutOut:
     routine = _fetch_routine(conn, routine_id, current_user["id"])
@@ -266,17 +287,28 @@ def get_workout_history(current_user: dict = Depends(get_current_user), conn: Co
         history.append({"session_id": s["session_id"], "date": s["started_at"], "routine_name": s["routine_name"] or "אימון מותאם אישית", "notes": s["notes"], "logs": formatted_logs})
     return history
 
-class RoutineCreate(BaseModel): name: str; description: Optional[str] = None
-class CustomExerciseAdd(BaseModel): exercise_name: str; equipment_type: str; increment_step: float; prescribed_weight: float; prescribed_reps_target: int; prescribed_sets: int; target_type: Optional[str] = "reps"
-class RoutineDeleteBatch(BaseModel): routine_ids: list[int]
-
 @app.post("/api/routines")
 def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     with conn.begin():
         existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
         if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
-        result = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
-        routine_id = result.lastrowid
+        
+        conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
+        routine_id = conn.execute(text("SELECT last_insert_rowid()")).scalar()
+
+        for idx, ex in enumerate(routine.exercises, start=1):
+            exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
+            if exercise_row:
+                exercise_id = exercise_row["id"]
+            else:
+                conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
+                exercise_id = conn.execute(text("SELECT last_insert_rowid()")).scalar()
+
+            conn.execute(
+                text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"),
+                {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type}
+            )
+
     return {"id": routine_id, "message": "Routine created"}
 
 @app.post("/api/routines/delete_batch")
@@ -286,19 +318,6 @@ def delete_routines_batch(payload: RoutineDeleteBatch, current_user: dict = Depe
             conn.execute(text("DELETE FROM routines WHERE id = :rid AND user_id = :uid"), {"rid": rid, "uid": current_user["id"]})
     return {"message": "Selected routines deleted"}
 
-@app.post("/api/routine/{routine_id}/add_custom_exercise")
-def add_custom_exercise_to_routine(routine_id: int, ex: CustomExerciseAdd, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
-    with conn.begin():
-        _fetch_routine(conn, routine_id, current_user["id"])
-        exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
-        if exercise_row: exercise_id = exercise_row["id"]
-        else:
-            res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
-            exercise_id = res_ex.lastrowid
-        order_row = conn.execute(text("SELECT COALESCE(MAX(display_order), 0) + 1 AS next_order FROM routine_exercises WHERE routine_id = :rid"), {"rid": routine_id}).mappings().first()
-        conn.execute(text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"), {"rid": routine_id, "eid": exercise_id, "order": order_row["next_order"], "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type})
-    return {"message": "Custom exercise added"}
-
 class SetLog(BaseModel): set_number: int; reps_performed: int; weight_used: float; rpe_score: float
 class ExerciseLog(BaseModel): routine_exercise_id: int; logs: list[SetLog]
 class WorkoutSubmit(BaseModel): notes: Optional[str] = None; exercises: list[ExerciseLog]
@@ -307,8 +326,9 @@ class WorkoutSubmit(BaseModel): notes: Optional[str] = None; exercises: list[Exe
 def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     with conn.begin():
         _fetch_routine(conn, routine_id, current_user["id"])
-        result = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
-        session_id = result.lastrowid
+        conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
+        session_id = conn.execute(text("SELECT last_insert_rowid()")).scalar()
+        
         for ex in workout.exercises:
             for s in ex.logs:
                 conn.execute(text("INSERT INTO workout_logs (session_id, routine_exercise_id, set_number, reps_performed, weight_used, rpe_score) VALUES (:sid, :reid, :snum, :reps, :weight, :rpe)"), {"sid": session_id, "reid": ex.routine_exercise_id, "snum": s.set_number, "reps": s.reps_performed, "weight": s.weight_used, "rpe": s.rpe_score})
@@ -321,8 +341,6 @@ def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict
                 next_presc = ProgressionEngine(get_strategy(config.equipment_type)).compute_next_prescription(config, current, last_session)
                 conn.execute(text("UPDATE routine_exercises SET prescribed_weight = :weight, prescribed_reps_target = :reps, prescribed_sets = :sets, consecutive_easy_count = :streak WHERE id = :reid"), {"weight": next_presc.weight, "reps": next_presc.reps_target, "sets": next_presc.sets, "streak": next_presc.consecutive_easy_count, "reid": ex.routine_exercise_id})
     return {"message": "Workout saved", "session_id": session_id}
-
-class RoutineUpdate(BaseModel): name: str; description: Optional[str] = None; exercises: list[CustomExerciseAdd]
 
 @app.get("/api/routines/{routine_id}/details")
 def get_routine_details(routine_id: int, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
@@ -337,10 +355,11 @@ def update_routine(routine_id: int, payload: RoutineUpdate, current_user: dict =
         conn.execute(text("DELETE FROM routine_exercises WHERE routine_id = :rid"), {"rid": routine_id})
         for idx, ex in enumerate(payload.exercises, start=1):
             exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
-            if exercise_row: exercise_id = exercise_row["id"]
+            if exercise_row:
+                exercise_id = exercise_row["id"]
             else:
-                res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
-                exercise_id = res_ex.lastrowid
+                conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
+                exercise_id = conn.execute(text("SELECT last_insert_rowid()")).scalar()
             conn.execute(text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"), {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type})
     return {"message": "Routine updated"}
 
