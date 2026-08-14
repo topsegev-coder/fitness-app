@@ -62,13 +62,15 @@ def get_db() -> Generator[Connection, None, None]:
         conn.close()
 
 def seed_demo_data(conn: Connection) -> None:
-    with conn.begin():
-        existing_user = conn.execute(text("SELECT id FROM users LIMIT 1")).first()
-        if existing_user is not None:
-            return
+    # with conn.begin():
+    #     existing_user = conn.execute(text("SELECT id FROM users LIMIT 1")).first()
+    #     if existing_user is not None:
+    #         return
 
-        # יצירת משתמש בסיסי בלבד ללא אימונים מובנים אוטומטיים
-        conn.execute(
-            text("INSERT INTO users (username, email) VALUES (:username, :email)"),
-            {"username": "demo_user", "email": "demo@example.com"},
-        )
+    #     # יצירת משתמש בסיסי בלבד ללא אימונים מובנים אוטומטיים
+    #     conn.execute(
+    #         text("INSERT INTO users (username, email) VALUES (:username, :email)"),
+    #         {"username": "demo_user", "email": "demo@example.com"},
+    #     )
+
+    pass
