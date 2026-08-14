@@ -57,12 +57,8 @@ def init_db(force: bool = False) -> bool:
     return True
 
 def get_db() -> Generator[Connection, None, None]:
-    conn = engine.connect()
-    try:
+    with engine.connect() as conn:
         yield conn
-    finally:
-        conn.close()
 
 def seed_demo_data(conn: Connection) -> None:
-    # ביטלנו את יצירת משתמש הדמו - מעכשיו כל אחד יירשם דרך האפליקציה!
     pass

@@ -31,7 +31,6 @@ from progression_strategies import (
     get_strategy,
 )
 
-# --- Security Configuration ---
 SECRET_KEY = "topazi-super-secret-key-fitness" 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30
@@ -63,7 +62,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: Connection = Dep
         raise credentials_exception
     return dict(user)
 
-# --- App Lifecycle ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()  
@@ -77,7 +75,6 @@ def engine_connect():
 
 app = FastAPI(title="Smart Fitness Tracker API", lifespan=lifespan)
 
-# --- Authentication Routes ---
 class UserRegister(BaseModel):
     username: str
     email: str
@@ -85,17 +82,22 @@ class UserRegister(BaseModel):
 
 @app.post("/api/register")
 def register_user(user: UserRegister, conn: Connection = Depends(get_db)):
-    with conn.begin():
-        existing = conn.execute(text("SELECT id FROM users WHERE username = :u OR email = :e"), {"u": user.username, "e": user.email}).first()
-        if existing:
-            raise HTTPException(status_code=400, detail="שם המשתמש או האימייל כבר קיימים במערכת.")
-        
-        hashed_password = get_password_hash(user.password)
-        conn.execute(
-            text("INSERT INTO users (username, email, password_hash) VALUES (:u, :e, :p)"),
-            {"u": user.username, "e": user.email, "p": hashed_password}
-        )
-    return {"message": "המשתמש נוצר בהצלחה!"}
+    try:
+        with conn.begin():
+            existing = conn.execute(text("SELECT id FROM users WHERE username = :u OR email = :e"), {"u": user.username, "e": user.email}).first()
+            if existing:
+                raise HTTPException(status_code=400, detail="שם המשתמש או האימייל כבר קיימים במערכת.")
+            
+            hashed_password = get_password_hash(user.password)
+            conn.execute(
+                text("INSERT INTO users (username, email, password_hash) VALUES (:u, :e, :p)"),
+                {"u": user.username, "e": user.email, "p": hashed_password}
+            )
+        return {"message": "המשתמש נוצר בהצלחה!"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/login")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), conn: Connection = Depends(get_db)):
@@ -107,8 +109,6 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), con
     access_token = jwt.encode({"sub": user["username"], "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
     return {"access_token": access_token, "token_type": "bearer", "username": user["username"]}
 
-
-# --- Models ---
 class ExercisePrescriptionOut(BaseModel):
     routine_exercise_id: int
     exercise_id: int
@@ -148,7 +148,6 @@ class RoutineUpdate(BaseModel):
 class RoutineDeleteBatch(BaseModel):
     routine_ids: list[int]
 
-# --- Helper Functions ---
 def _fetch_routine(conn: Connection, routine_id: int, user_id: int) -> dict:
     row = conn.execute(
         text("SELECT id, name FROM routines WHERE id = :id AND user_id = :uid"),
@@ -205,13 +204,11 @@ def _describe_basis(before: Prescription, after: Prescription, had_session: bool
     if after.consecutive_easy_count > before.consecutive_easy_count: return "Easy session logged — one more to trigger progression."
     return "Holding at current prescription."
 
-# --- UI Routes ---
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     html_path = Path(__file__).parent / "index.html"
     return html_path.read_text(encoding="utf-8")
 
-# --- API Routes ---
 @app.get("/routine/{routine_id}/next_workout", response_model=NextWorkoutOut)
 def get_next_workout(routine_id: int, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)) -> NextWorkoutOut:
     routine = _fetch_routine(conn, routine_id, current_user["id"])
@@ -294,8 +291,8 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
             existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
             if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
             
-            result = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
-            routine_id = result.lastrowid
+            res_routine = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
+            routine_id = res_routine.lastrowid
 
             for idx, ex in enumerate(routine.exercises, start=1):
                 exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
@@ -314,14 +311,17 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/routines/delete_batch")
 def delete_routines_batch(payload: RoutineDeleteBatch, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
-    with conn.begin():
-        for rid in payload.routine_ids:
-            conn.execute(text("DELETE FROM routines WHERE id = :rid AND user_id = :uid"), {"rid": rid, "uid": current_user["id"]})
-    return {"message": "Selected routines deleted"}
+    try:
+        with conn.begin():
+            for rid in payload.routine_ids:
+                conn.execute(text("DELETE FROM routines WHERE id = :rid AND user_id = :uid"), {"rid": rid, "uid": current_user["id"]})
+        return {"message": "Selected routines deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 class SetLog(BaseModel): set_number: int; reps_performed: int; weight_used: float; rpe_score: float
 class ExerciseLog(BaseModel): routine_exercise_id: int; logs: list[SetLog]
@@ -332,8 +332,8 @@ def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict
     try:
         with conn.begin():
             _fetch_routine(conn, routine_id, current_user["id"])
-            result = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
-            session_id = result.lastrowid
+            res_session = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
+            session_id = res_session.lastrowid
             
             for ex in workout.exercises:
                 for s in ex.logs:
@@ -350,7 +350,7 @@ def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/routines/{routine_id}/details")
 def get_routine_details(routine_id: int, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
@@ -376,7 +376,7 @@ def update_routine(routine_id: int, payload: RoutineUpdate, current_user: dict =
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/weekly_stats")
 def get_weekly_stats(current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
