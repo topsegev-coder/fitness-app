@@ -66,6 +66,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: Connection = Dep
 # --- App Lifecycle ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # הסרנו את force=True כדי שהנתונים שלך יישמרו לתמיד ולא ימחקו כשהשרת מתעורר!
     init_db()  
     with engine_connect() as conn:
         seed_demo_data(conn) 
@@ -274,11 +275,8 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
     with conn.begin():
         existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
         if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
-        
-        # הבאג תוקן כאן: שליפת ה-ID בתוך ההקשר של השמירה למסד הנתונים
         result = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
         routine_id = result.lastrowid
-        
     return {"id": routine_id, "message": "Routine created"}
 
 @app.post("/api/routines/delete_batch")
@@ -290,8 +288,8 @@ def delete_routines_batch(payload: RoutineDeleteBatch, current_user: dict = Depe
 
 @app.post("/api/routine/{routine_id}/add_custom_exercise")
 def add_custom_exercise_to_routine(routine_id: int, ex: CustomExerciseAdd, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
-    _fetch_routine(conn, routine_id, current_user["id"])
     with conn.begin():
+        _fetch_routine(conn, routine_id, current_user["id"])
         exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
         if exercise_row: exercise_id = exercise_row["id"]
         else:
@@ -307,8 +305,8 @@ class WorkoutSubmit(BaseModel): notes: Optional[str] = None; exercises: list[Exe
 
 @app.post("/routine/{routine_id}/complete")
 def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
-    _fetch_routine(conn, routine_id, current_user["id"])
     with conn.begin():
+        _fetch_routine(conn, routine_id, current_user["id"])
         result = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
         session_id = result.lastrowid
         for ex in workout.exercises:
