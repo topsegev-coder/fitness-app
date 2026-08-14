@@ -234,7 +234,7 @@
 <body>
     <div class="page-container">
         
-        <!-- כותרת ראשית (תוצג רק למחוברים) -->
+        <!-- כותרת ראשית -->
         <div id="app-header" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 24px;">
             <h1 style="margin: 0;">האימונים שלי 💪</h1>
             <div style="font-size: 14px;">
@@ -248,7 +248,6 @@
             <div class="card" style="text-align: center; max-width: 400px; margin: 40px auto;">
                 <h2 id="auth-title">התחברות לאימון שלי</h2>
                 
-                <!-- טופס התחברות -->
                 <div id="login-form">
                     <div class="form-group">
                         <input type="text" id="login-username" placeholder="שם משתמש">
@@ -260,7 +259,6 @@
                     <p style="font-size: 15px; margin-top: 15px;">עוד אין לך חשבון? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">הירשמי כאן</a></p>
                 </div>
 
-                <!-- טופס הרשמה -->
                 <div id="register-form" style="display: none;">
                     <div class="form-group">
                         <input type="text" id="reg-username" placeholder="שם משתמש (ללא רווחים)">
@@ -287,7 +285,6 @@
             </div>
 
             <div class="dashboard-grid">
-                <!-- ריבוע ראשי גדול: רשימת האימונים -->
                 <div class="card" style="margin: 0;">
                     <h2>האימונים שלי</h2>
                     <div id="routines-list">טוען...</div>
@@ -296,15 +293,11 @@
                     <button class="btn btn-danger" onclick="showDeleteRoutinesView()">🗑️ מחיקת אימון</button>
                 </div>
 
-                <!-- עמודת צד: מונה שבועי וריבוע היסטוריה -->
                 <div>
-                    <!-- ריבוע מונה שבועי -->
                     <div class="stat-box">
                         <div style="font-size: 15px; font-weight: 600;">אימונים השבוע</div>
                         <div id="weekly-workout-count" class="stat-number">0</div>
                     </div>
-
-                    <!-- ריבוע היסטוריה -->
                     <div class="card" style="cursor: pointer;" onclick="showHistoryView()">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <h2>היסטוריית אימונים 📊</h2>
@@ -393,7 +386,6 @@
     </div>
 
     <script>
-        // --- מצב האפליקציה (State) ---
         let currentExercises = [];
         let completedExercisesIds = [];
         let activeRoutineId = null;
@@ -404,14 +396,12 @@
         let authToken = localStorage.getItem('auth_token');
         let currentUsername = localStorage.getItem('username');
 
-        // --- ניהול ניתוב (Views) ---
         function showView(viewId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             window.scrollTo(0, 0);
         }
 
-        // --- מעטפת לתקשורת מאובטחת ---
         async function apiFetch(url, options = {}) {
             if (!options.headers) options.headers = {};
             if (authToken) {
@@ -425,7 +415,6 @@
             return response;
         }
 
-        // --- התחברות והרשמה ---
         function toggleAuthMode() {
             const loginForm = document.getElementById('login-form');
             const regForm = document.getElementById('register-form');
@@ -512,7 +501,6 @@
             }
         }
 
-        // --- לוגיקת האפליקציה המאובטחת ---
         async function loadDashboard() {
             showView('view-dashboard');
             const listDiv = document.getElementById('routines-list');
@@ -833,14 +821,21 @@
             const exercisesList = [];
             for(let row of rows) {
                 const exName = row.querySelector('.ex-name').value.trim();
+                const step = parseFloat(row.querySelector('.ex-step').value);
+                const weight = parseFloat(row.querySelector('.ex-weight').value);
+                const reps = parseFloat(row.querySelector('.ex-reps').value);
+                const sets = parseFloat(row.querySelector('.ex-sets').value);
+                
                 if(!exName) return alert('יש לוודא שלכל תרגיל יש שם');
+                if (isNaN(weight) || isNaN(step) || isNaN(reps) || isNaN(sets)) return alert('נא למלא את כל הערכים המספריים עבור התרגיל: ' + exName);
+
                 exercisesList.push({ 
                     exercise_name: exName, 
                     equipment_type: row.querySelector('.ex-equipment').value, 
-                    increment_step: parseFloat(row.querySelector('.ex-step').value), 
-                    prescribed_weight: parseFloat(row.querySelector('.ex-weight').value), 
-                    prescribed_reps_target: parseFloat(row.querySelector('.ex-reps').value), 
-                    prescribed_sets: parseFloat(row.querySelector('.ex-sets').value),
+                    increment_step: step, 
+                    prescribed_weight: weight, 
+                    prescribed_reps_target: reps, 
+                    prescribed_sets: sets,
                     target_type: row.querySelector('.ex-target-switch').checked ? 'time' : 'reps' 
                 });
             }
@@ -857,7 +852,7 @@
                 }
                 alert('האימון עודכן בהצלחה!');
                 loadDashboard();
-            } catch (e) { alert('שגיאת תקשורת'); }
+            } catch (e) { alert(e.message || 'שגיאת תקשורת'); }
         }
 
         function toggleTargetType(checkboxEl) {
@@ -884,14 +879,21 @@
             const exercisesList = [];
             for(let row of rows) {
                 const exName = row.querySelector('.ex-name').value.trim();
+                const step = parseFloat(row.querySelector('.ex-step').value);
+                const weight = parseFloat(row.querySelector('.ex-weight').value);
+                const reps = parseFloat(row.querySelector('.ex-reps').value);
+                const sets = parseFloat(row.querySelector('.ex-sets').value);
+                
                 if(!exName) return alert('יש לוודא שלכל תרגיל יש שם');
+                if (isNaN(weight) || isNaN(step) || isNaN(reps) || isNaN(sets)) return alert('נא למלא את כל הערכים המספריים עבור התרגיל: ' + exName);
+
                 exercisesList.push({ 
                     exercise_name: exName, 
                     equipment_type: row.querySelector('.ex-equipment').value, 
-                    increment_step: parseFloat(row.querySelector('.ex-step').value), 
-                    prescribed_weight: parseFloat(row.querySelector('.ex-weight').value), 
-                    prescribed_reps_target: parseFloat(row.querySelector('.ex-reps').value), 
-                    prescribed_sets: parseFloat(row.querySelector('.ex-sets').value),
+                    increment_step: step, 
+                    prescribed_weight: weight, 
+                    prescribed_reps_target: reps, 
+                    prescribed_sets: sets,
                     target_type: row.querySelector('.ex-target-switch').checked ? 'time' : 'reps'
                 });
             }
@@ -910,15 +912,19 @@
 
                 const routineData = await resRoutine.json();
                 for(let ex of exercisesList) {
-                    await apiFetch(`/api/routine/${routineData.id}/add_custom_exercise`, {
+                    const addRes = await apiFetch(`/api/routine/${routineData.id}/add_custom_exercise`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(ex)
                     });
+                    if(!addRes.ok) {
+                        const errAdd = await addRes.json();
+                        throw new Error(errAdd.detail || 'שגיאה בהוספת תרגיל');
+                    }
                 }
                 alert('האימון נוצר בהצלחה!');
                 loadDashboard();
-            } catch (e) { alert('שגיאת תקשורת'); }
+            } catch (e) { alert(e.message || 'שגיאת תקשורת בשרת'); }
         }
 
         async function startWorkout(routineId) {
@@ -1056,7 +1062,7 @@
             }
         }
 
-        // טעינה ראשונית של האפליקציה (בודק אם כבר התחברת בעבר)
+        // טעינה ראשונית של האפליקציה
         window.onload = initApp;
     </script>
 </body>

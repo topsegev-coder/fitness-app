@@ -66,7 +66,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: Connection = Dep
 # --- App Lifecycle ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db(force=True)  # איפוס אחרון ודי כדי לוודא שמסד הנתונים מוכן לסיסמאות
+    init_db()  
     with engine_connect() as conn:
         seed_demo_data(conn) 
     yield
@@ -274,8 +274,12 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
     with conn.begin():
         existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
         if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
+        
+        # הבאג תוקן כאן: שליפת ה-ID בתוך ההקשר של השמירה למסד הנתונים
         result = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
-    return {"id": result.lastrowid, "message": "Routine created"}
+        routine_id = result.lastrowid
+        
+    return {"id": routine_id, "message": "Routine created"}
 
 @app.post("/api/routines/delete_batch")
 def delete_routines_batch(payload: RoutineDeleteBatch, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
