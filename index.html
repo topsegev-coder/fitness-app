@@ -23,7 +23,7 @@
             padding: 16px; 
             color: var(--text-main); 
             padding-bottom: 70px; 
-            font-size: 17px; 
+            font-size: 17px;
             -webkit-font-smoothing: antialiased; 
         }
 
@@ -405,9 +405,14 @@
         async function apiFetch(url, options = {}) {
             if (!options.headers) options.headers = {};
             if (authToken) {
-                options.headers['Authorization'] = `Bearer ${authToken}`;
+                options.headers['Authorization'] = `Bearer ${authToken.trim()}`;
             }
-            const response = await fetch(url, options);
+            let response;
+            try {
+                response = await fetch(url, options);
+            } catch (err) {
+                throw new Error("חסימת רשת או שגיאת דפדפן פנימית. אנא רענני את הדף.");
+            }
             if (response.status === 401) {
                 logout();
                 throw new Error("פג תוקף החיבור, אנא התחברי מחדש");
@@ -847,10 +852,17 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: name, description: '', exercises: exercisesList })
                 });
+                
                 if(!res.ok) {
-                    const err = await res.json();
-                    return alert(err.detail || 'שגיאה בעדכון האימון');
+                    let errorMsg = `שגיאה ${res.status}`;
+                    try {
+                        const err = await res.json();
+                        if (typeof err.detail === 'string') errorMsg = err.detail;
+                        else if (Array.isArray(err.detail) && err.detail[0]) errorMsg = err.detail[0].msg;
+                    } catch(parseErr) {}
+                    return alert(errorMsg);
                 }
+                
                 alert('האימון עודכן בהצלחה!');
                 loadDashboard();
             } catch (e) { alert(e.message || 'שגיאת תקשורת'); }
@@ -907,18 +919,20 @@
                 });
                 
                 if(!resRoutine.ok) {
-                    let errorMsg = 'שגיאה ביצירת האימון';
+                    let errorMsg = `השרת החזיר שגיאה ${resRoutine.status}`;
                     try {
                         const err = await resRoutine.json();
                         if (typeof err.detail === 'string') errorMsg = err.detail;
-                        else if (Array.isArray(err.detail) && err.detail[0] && err.detail[0].msg) errorMsg = err.detail[0].msg;
-                    } catch(e) {}
+                        else if (Array.isArray(err.detail) && err.detail[0]) errorMsg = err.detail[0].msg;
+                    } catch(parseErr) {}
                     return alert(errorMsg);
                 }
 
                 alert('האימון נוצר בהצלחה!');
                 loadDashboard();
-            } catch (e) { alert(e.message || 'שגיאת תקשורת בשרת'); }
+            } catch (e) { 
+                alert(e.message || 'שגיאת תקשורת בשרת'); 
+            }
         }
 
         async function startWorkout(routineId) {
@@ -1056,6 +1070,7 @@
             }
         }
 
+        // טעינה ראשונית של האפליקציה
         window.onload = initApp;
     </script>
 </body>
