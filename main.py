@@ -633,7 +633,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: Connection = Dep
 # --- App Lifecycle ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()  
+    init_db(force=True)  
     with engine_connect() as conn:
         seed_demo_data(conn) 
     yield
