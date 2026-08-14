@@ -83,20 +83,21 @@ class UserRegister(BaseModel):
 @app.post("/api/register")
 def register_user(user: UserRegister, conn: Connection = Depends(get_db)):
     try:
-        with conn.begin():
-            existing = conn.execute(text("SELECT id FROM users WHERE username = :u OR email = :e"), {"u": user.username, "e": user.email}).first()
-            if existing:
-                raise HTTPException(status_code=400, detail="שם המשתמש או האימייל כבר קיימים במערכת.")
-            
-            hashed_password = get_password_hash(user.password)
-            conn.execute(
-                text("INSERT INTO users (username, email, password_hash) VALUES (:u, :e, :p)"),
-                {"u": user.username, "e": user.email, "p": hashed_password}
-            )
+        existing = conn.execute(text("SELECT id FROM users WHERE username = :u OR email = :e"), {"u": user.username, "e": user.email}).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="שם המשתמש או האימייל כבר קיימים במערכת.")
+        
+        hashed_password = get_password_hash(user.password)
+        conn.execute(
+            text("INSERT INTO users (username, email, password_hash) VALUES (:u, :e, :p)"),
+            {"u": user.username, "e": user.email, "p": hashed_password}
+        )
+        conn.commit()
         return {"message": "המשתמש נוצר בהצלחה!"}
     except HTTPException:
         raise
     except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/login")
@@ -287,40 +288,43 @@ def get_workout_history(current_user: dict = Depends(get_current_user), conn: Co
 @app.post("/api/routines")
 def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     try:
-        with conn.begin():
-            existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
-            if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
-            
-            res_routine = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
-            routine_id = res_routine.lastrowid
+        existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
+        if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
+        
+        res_routine = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
+        routine_id = res_routine.lastrowid
 
-            for idx, ex in enumerate(routine.exercises, start=1):
-                exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
-                if exercise_row:
-                    exercise_id = exercise_row["id"]
-                else:
-                    res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
-                    exercise_id = res_ex.lastrowid
+        for idx, ex in enumerate(routine.exercises, start=1):
+            exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
+            if exercise_row:
+                exercise_id = exercise_row["id"]
+            else:
+                res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
+                exercise_id = res_ex.lastrowid
 
-                conn.execute(
-                    text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"),
-                    {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type}
-                )
+            conn.execute(
+                text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"),
+                {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type}
+            )
 
+        conn.commit()
         return {"id": routine_id, "message": "Routine created"}
     except HTTPException:
+        conn.rollback()
         raise
     except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/routines/delete_batch")
 def delete_routines_batch(payload: RoutineDeleteBatch, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     try:
-        with conn.begin():
-            for rid in payload.routine_ids:
-                conn.execute(text("DELETE FROM routines WHERE id = :rid AND user_id = :uid"), {"rid": rid, "uid": current_user["id"]})
+        for rid in payload.routine_ids:
+            conn.execute(text("DELETE FROM routines WHERE id = :rid AND user_id = :uid"), {"rid": rid, "uid": current_user["id"]})
+        conn.commit()
         return {"message": "Selected routines deleted"}
     except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 class SetLog(BaseModel): set_number: int; reps_performed: int; weight_used: float; rpe_score: float
@@ -330,26 +334,28 @@ class WorkoutSubmit(BaseModel): notes: Optional[str] = None; exercises: list[Exe
 @app.post("/routine/{routine_id}/complete")
 def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     try:
-        with conn.begin():
-            _fetch_routine(conn, routine_id, current_user["id"])
-            res_session = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
-            session_id = res_session.lastrowid
-            
-            for ex in workout.exercises:
-                for s in ex.logs:
-                    conn.execute(text("INSERT INTO workout_logs (session_id, routine_exercise_id, set_number, reps_performed, weight_used, rpe_score) VALUES (:sid, :reid, :snum, :reps, :weight, :rpe)"), {"sid": session_id, "reid": ex.routine_exercise_id, "snum": s.set_number, "reps": s.reps_performed, "weight": s.weight_used, "rpe": s.rpe_score})
-                re_row = conn.execute(text("SELECT re.*, e.* FROM routine_exercises re JOIN exercises e ON e.id = re.exercise_id WHERE re.id = :reid"), {"reid": ex.routine_exercise_id}).mappings().first()
-                if re_row:
-                    config = ExerciseConfig(exercise_id=re_row["id"], equipment_type=EquipmentType(re_row["equipment_type"]), increment_step=re_row["increment_step"], min_reps_target=re_row["min_reps_target"], max_reps_target=re_row["max_reps_target"], max_weight_limit=re_row["max_weight_limit"])
-                    current = Prescription(weight=re_row["prescribed_weight"], reps_target=re_row["prescribed_reps_target"], sets=re_row["prescribed_sets"], consecutive_easy_count=re_row["consecutive_easy_count"])
-                    avg_rpe = sum([s.rpe_score for s in ex.logs]) / len(ex.logs) if ex.logs else 10.0
-                    last_session = SessionResult(session_date=date.today(), difficulty=Difficulty.from_rpe(avg_rpe), hit_rep_target=all(s.reps_performed >= current.reps_target for s in ex.logs))
-                    next_presc = ProgressionEngine(get_strategy(config.equipment_type)).compute_next_prescription(config, current, last_session)
-                    conn.execute(text("UPDATE routine_exercises SET prescribed_weight = :weight, prescribed_reps_target = :reps, prescribed_sets = :sets, consecutive_easy_count = :streak WHERE id = :reid"), {"weight": next_presc.weight, "reps": next_presc.reps_target, "sets": next_presc.sets, "streak": next_presc.consecutive_easy_count, "reid": ex.routine_exercise_id})
+        _fetch_routine(conn, routine_id, current_user["id"])
+        res_session = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
+        session_id = res_session.lastrowid
+        
+        for ex in workout.exercises:
+            for s in ex.logs:
+                conn.execute(text("INSERT INTO workout_logs (session_id, routine_exercise_id, set_number, reps_performed, weight_used, rpe_score) VALUES (:sid, :reid, :snum, :reps, :weight, :rpe)"), {"sid": session_id, "reid": ex.routine_exercise_id, "snum": s.set_number, "reps": s.reps_performed, "weight": s.weight_used, "rpe": s.rpe_score})
+            re_row = conn.execute(text("SELECT re.*, e.* FROM routine_exercises re JOIN exercises e ON e.id = re.exercise_id WHERE re.id = :reid"), {"reid": ex.routine_exercise_id}).mappings().first()
+            if re_row:
+                config = ExerciseConfig(exercise_id=re_row["id"], equipment_type=EquipmentType(re_row["equipment_type"]), increment_step=re_row["increment_step"], min_reps_target=re_row["min_reps_target"], max_reps_target=re_row["max_reps_target"], max_weight_limit=re_row["max_weight_limit"])
+                current = Prescription(weight=re_row["prescribed_weight"], reps_target=re_row["prescribed_reps_target"], sets=re_row["prescribed_sets"], consecutive_easy_count=re_row["consecutive_easy_count"])
+                avg_rpe = sum([s.rpe_score for s in ex.logs]) / len(ex.logs) if ex.logs else 10.0
+                last_session = SessionResult(session_date=date.today(), difficulty=Difficulty.from_rpe(avg_rpe), hit_rep_target=all(s.reps_performed >= current.reps_target for s in ex.logs))
+                next_presc = ProgressionEngine(get_strategy(config.equipment_type)).compute_next_prescription(config, current, last_session)
+                conn.execute(text("UPDATE routine_exercises SET prescribed_weight = :weight, prescribed_reps_target = :reps, prescribed_sets = :sets, consecutive_easy_count = :streak WHERE id = :reid"), {"weight": next_presc.weight, "reps": next_presc.reps_target, "sets": next_presc.sets, "streak": next_presc.consecutive_easy_count, "reid": ex.routine_exercise_id})
+        conn.commit()
         return {"message": "Workout saved", "session_id": session_id}
     except HTTPException:
+        conn.rollback()
         raise
     except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/routines/{routine_id}/details")
@@ -359,23 +365,25 @@ def get_routine_details(routine_id: int, current_user: dict = Depends(get_curren
 @app.put("/api/routines/{routine_id}")
 def update_routine(routine_id: int, payload: RoutineUpdate, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     try:
-        with conn.begin():
-            existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name) AND id != :rid"), {"uid": current_user["id"], "name": payload.name.strip(), "rid": routine_id}).first()
-            if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
-            conn.execute(text("UPDATE routines SET name = :name, description = :desc WHERE id = :rid"), {"name": payload.name.strip(), "desc": payload.description, "rid": routine_id})
-            conn.execute(text("DELETE FROM routine_exercises WHERE routine_id = :rid"), {"rid": routine_id})
-            for idx, ex in enumerate(payload.exercises, start=1):
-                exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
-                if exercise_row:
-                    exercise_id = exercise_row["id"]
-                else:
-                    res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
-                    exercise_id = res_ex.lastrowid
-                conn.execute(text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"), {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type})
+        existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name) AND id != :rid"), {"uid": current_user["id"], "name": payload.name.strip(), "rid": routine_id}).first()
+        if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
+        conn.execute(text("UPDATE routines SET name = :name, description = :desc WHERE id = :rid"), {"name": payload.name.strip(), "desc": payload.description, "rid": routine_id})
+        conn.execute(text("DELETE FROM routine_exercises WHERE routine_id = :rid"), {"rid": routine_id})
+        for idx, ex in enumerate(payload.exercises, start=1):
+            exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
+            if exercise_row:
+                exercise_id = exercise_row["id"]
+            else:
+                res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
+                exercise_id = res_ex.lastrowid
+            conn.execute(text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"), {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type})
+        conn.commit()
         return {"message": "Routine updated"}
     except HTTPException:
+        conn.rollback()
         raise
     except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/weekly_stats")
