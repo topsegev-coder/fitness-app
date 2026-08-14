@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import re
 import sqlite3
-from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Generator
 
@@ -38,9 +37,12 @@ def _load_translated_schema() -> str:
 
 def init_db(force: bool = False) -> bool:
     if force and DB_PATH.exists():
-        DB_PATH.unlink()
+        try:
+            DB_PATH.unlink()
+        except Exception:
+            pass
 
-    if DB_PATH.exists():
+    if DB_PATH.exists() and not force:
         return False
 
     translated_sql = _load_translated_schema()
@@ -62,15 +64,5 @@ def get_db() -> Generator[Connection, None, None]:
         conn.close()
 
 def seed_demo_data(conn: Connection) -> None:
-    # with conn.begin():
-    #     existing_user = conn.execute(text("SELECT id FROM users LIMIT 1")).first()
-    #     if existing_user is not None:
-    #         return
-
-    #     # יצירת משתמש בסיסי בלבד ללא אימונים מובנים אוטומטיים
-    #     conn.execute(
-    #         text("INSERT INTO users (username, email) VALUES (:username, :email)"),
-    #         {"username": "demo_user", "email": "demo@example.com"},
-    #     )
-
+    # ביטלנו את יצירת משתמש הדמו - מעכשיו כל אחד יירשם דרך האפליקציה!
     pass
