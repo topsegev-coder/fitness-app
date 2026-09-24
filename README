@@ -1,0 +1,61 @@
+# Smart Fitness Tracker & Auto-Progression Engine
+
+A web application built with **FastAPI** and **PostgreSQL** that goes beyond standard workout logging. This application features a custom, dynamic progression algorithm that automatically prescribes weights, reps, and time targets for upcoming workouts based on historical RPE (Rate of Perceived Exertion) data and user consistency.
+
+## Key Features
+
+* **Smart Progression Algorithm:** Automatically computes the next workout's prescription (progressive overload).
+  * Increases reps dynamically (+2 to +4) or time (+15s) based on previous easy sessions.
+  * Implements intelligent weight bumps while enforcing a safety cap (up to 2x initial weight).
+  * **Auto-Deloading:** Automatically detects inactivity. Decreases targets slightly after 14 days of no training, and triggers a larger deload after 30 days.
+* **Strategy Design Pattern:** The progression logic is decoupled using the Strategy Pattern to handle different equipment mechanics (Free Weights, Machines, Bodyweight) uniquely without cluttering the business logic.
+* **Full-Stack Implementation:** 
+  * Backend: **Python (FastAPI)** for high-performance, asynchronous REST APIs.
+  * Database: **PostgreSQL** (hosted on Neon) orchestrated with **SQLAlchemy**.
+  * Frontend: Pure HTML/JS/CSS, fully responsive, and designed with a mobile-first aesthetic.
+
+
+## Architecture & Algorithmic Highlights
+
+The progression engine is built to mimic a real personal trainer's logic:
+1. **RPE Evaluation:** Users rate exercise difficulty from 1-5.
+2. **Consecutive Easy Streak:** The engine waits for consecutive "easy" logged sets before suggesting an overload to prevent injury.
+3. **Equipment Agnostic:** 
+   * `FreeWeightStrategy`: Bumps weight based on defined increments (e.g., 2.5kg).
+   * `BodyweightStrategy`: Progresses only on reps/time if weight increments are not applicable.
+
+## Technology Stack
+
+* **Backend:** Python, FastAPI, Uvicorn.
+* **Database:** PostgreSQL, SQLAlchemy (ORM), Psycopg2
+* **Security:** Python-Jose (JWT), Bcrypt
+* **Frontend:** HTML5, CSS, Vanilla JavaScript
+* **Deployment:** Render (Web Service) & Neon (Serverless Postgres)
+
+## Local Setup
+
+1. **Clone the repository:**
+   \`\`\`bash
+   git clone https://github.com/topaz-segev/fitness-tracker.git
+   cd fitness-tracker
+   \`\`\`
+
+2. **Install dependencies:**
+   \`\`\`bash
+   pip install -r requirements.txt
+   \`\`\`
+
+3. **Set up the database:**
+   Ensure you have a PostgreSQL instance running. Set your environment variable:
+   \`\`\`bash
+   export DATABASE_URL="postgresql://user:password@localhost/dbname"
+   \`\`\`
+   *(Note: The database tables can be initialized via the provided `schema.sql` file).*
+
+4. **Run the application:**
+   \`\`\`bash
+   uvicorn main:app --reload
+   \`\`\`
+
+5. **Access the App:**
+   Open your browser and navigate to `http://localhost:8000`.
