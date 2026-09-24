@@ -688,28 +688,29 @@
                     <label style="font-size:13px;">שם התרגיל</label>
                     <input type="text" class="ex-name" placeholder="לדוגמה: סקוואט" value="${data?data.exercise_name:''}" autocomplete="off">
                 </div>
-                <div style="display:grid; grid-template-columns: 3fr 2fr; gap:10px; margin-bottom:12px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px; width:68%;">
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סוג ציוד</label>
-                        <select class="ex-equipment" onchange="updateDefaultStep(this)" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
-                            <option value="BODYWEIGHT" ${data&&data.equipment_type==='BODYWEIGHT'?'selected':''}>ללא משקל</option>
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סוג ציוד</label>
+                        <select class="ex-equipment" onchange="updateDefaultStep(this)" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
+                            <option value="BODYWEIGHT" ${data&&data.equipment_type==='BODYWEIGHT'?'selected':''}>משקל גוף</option>
                             <option value="FREE_WEIGHT" ${data&&data.equipment_type==='FREE_WEIGHT'?'selected':''}>משקולות</option>
                             <option value="MACHINE" ${data&&data.equipment_type==='MACHINE'?'selected':''}>מכונה</option>
                         </select>
                     </div>
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">קפיצה (ק״ג)</label>
-                        <input type="number" class="ex-step" value="${data?data.increment_step:0}" step="0.5" min="0" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">קפיצה (ק״ג)</label>
+                        <input type="number" class="ex-step" value="${data?data.increment_step:0}" step="0.5" min="0" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
                     </div>
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">משקל התחלתי</label>
-                        <input type="number" class="ex-weight" value="${data?data.prescribed_weight:0}" min="0" step="0.5" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">משקל התחלתי</label>
+                        <input type="number" class="ex-weight" value="${data?data.prescribed_weight:0}" min="0" step="0.5" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
                     </div>
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סטים</label>
-                        <input type="number" class="ex-sets" value="${data?data.prescribed_sets:3}" min="1" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סטים</label>
+                        <input type="number" class="ex-sets" value="${data?data.prescribed_sets:3}" min="1" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
                     </div>
                 </div>
+                
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; background:#fff; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <label class="switch" style="margin:0;">
@@ -756,28 +757,30 @@
                     <label style="font-size:13px;">שם התרגיל</label>
                     <input type="text" class="ex-name" placeholder="לדוגמה: סקוואט" value="${data?data.exercise_name:''}" autocomplete="off">
                 </div>
-                <div style="display:grid; grid-template-columns: 3fr 2fr; gap:10px; margin-bottom:12px;">
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px; width:68%;">
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סוג ציוד</label>
-                        <select class="ex-equipment" onchange="updateDefaultStep(this)" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
-                            <option value="BODYWEIGHT" ${data&&data.equipment_type==='BODYWEIGHT'?'selected':''}>ללא משקל</option>
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סוג ציוד</label>
+                        <select class="ex-equipment" onchange="updateDefaultStep(this)" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
+                            <option value="BODYWEIGHT" ${data&&data.equipment_type==='BODYWEIGHT'?'selected':''}>משקל גוף</option>
                             <option value="FREE_WEIGHT" ${data&&data.equipment_type==='FREE_WEIGHT'?'selected':''}>משקולות</option>
                             <option value="MACHINE" ${data&&data.equipment_type==='MACHINE'?'selected':''}>מכונה</option>
                         </select>
                     </div>
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">קפיצה (ק״ג)</label>
-                        <input type="number" class="ex-step" value="${data?data.increment_step:0}" step="0.5" min="0" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">קפיצה (ק״ג)</label>
+                        <input type="number" class="ex-step" value="${data?data.increment_step:0}" step="0.5" min="0" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
                     </div>
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">משקל התחלתי</label>
-                        <input type="number" class="ex-weight" value="${data?data.prescribed_weight:0}" min="0" step="0.5" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">משקל התחלתי</label>
+                        <input type="number" class="ex-weight" value="${data?data.prescribed_weight:0}" min="0" step="0.5" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
                     </div>
                     <div style="text-align: right;">
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סטים</label>
-                        <input type="number" class="ex-sets" value="${data?data.prescribed_sets:3}" min="1" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
+                        <label style="font-size:11px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סטים</label>
+                        <input type="number" class="ex-sets" value="${data?data.prescribed_sets:3}" min="1" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit; font-size:13px;">
                     </div>
                 </div>
+                
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; background:#fff; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <label class="switch" style="margin:0;">
