@@ -4,3 +4,4 @@ sqlalchemy
 bcrypt
 python-jose[cryptography]
 python-multipart
+psycopg2-binary
