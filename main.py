@@ -291,16 +291,16 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
         existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
         if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
         
-        res_routine = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc)"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
-        routine_id = res_routine.lastrowid
+        res_routine = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc) RETURNING id"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
+        routine_id = res_routine.scalar()
 
         for idx, ex in enumerate(routine.exercises, start=1):
             exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
             if exercise_row:
                 exercise_id = exercise_row["id"]
             else:
-                res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
-                exercise_id = res_ex.lastrowid
+                res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets) RETURNING id"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
+                exercise_id = res_ex.scalar()
 
             conn.execute(
                 text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"),
@@ -335,8 +335,8 @@ class WorkoutSubmit(BaseModel): notes: Optional[str] = None; exercises: list[Exe
 def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     try:
         _fetch_routine(conn, routine_id, current_user["id"])
-        res_session = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes)"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
-        session_id = res_session.lastrowid
+        res_session = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes) RETURNING id"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
+        session_id = res_session.scalar()
         
         for ex in workout.exercises:
             for s in ex.logs:
@@ -374,8 +374,8 @@ def update_routine(routine_id: int, payload: RoutineUpdate, current_user: dict =
             if exercise_row:
                 exercise_id = exercise_row["id"]
             else:
-                res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets)"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
-                exercise_id = res_ex.lastrowid
+                res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets) RETURNING id"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
+                exercise_id = res_ex.scalar()
             conn.execute(text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"), {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type})
         conn.commit()
         return {"message": "Routine updated"}
