@@ -20,125 +20,124 @@
             font-family: 'Playpen Sans Hebrew', cursive, sans-serif !important; 
             background: var(--bg-color); 
             margin: 0; 
-            padding: 16px; 
+            padding: 10px; 
             color: var(--text-main); 
-            padding-bottom: 70px; 
-            font-size: 17px;
+            padding-bottom: 20px; 
+            font-size: 15px;
             -webkit-font-smoothing: antialiased; 
         }
 
         h1 { 
             color: var(--text-main); 
-            font-size: 28px; 
-            font-weight: 800;
+            font-size: 24px; 
+            font-weight: 800; 
+            margin-top: 0;
         }
 
-        h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-top: 0;
+        h2 { 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            margin-top: 0; 
+            margin-bottom: 8px;
         }
         
         .view { display: none; }
         .view.active { display: block; }
 
-        .page-container {
-            max-width: 900px;
-            margin: 0 auto;
+        .page-container { 
+            max-width: 900px; 
+            margin: 0 auto; 
         }
 
         .card { 
             background: var(--card-bg); 
             border-radius: 14px; 
-            padding: 16px; 
-            margin-bottom: 14px; 
+            padding: 12px; 
+            margin-bottom: 10px; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
             border: 1px solid #e2e8f0;
         }
         
         .card-title { 
-            font-size: 18px; 
+            font-size: 16px; 
             font-weight: bold; 
-            margin-bottom: 6px; 
+            margin-bottom: 4px; 
             color: var(--text-main); 
         }
         
         .btn { 
             width: 100%; 
-            padding: 12px; 
+            padding: 10px; 
             border: none; 
             border-radius: 10px; 
-            font-size: 16px; 
+            font-size: 15px; 
             font-weight: bold; 
             cursor: pointer; 
             text-align: center; 
-            margin-bottom: 10px; 
+            margin-bottom: 8px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
             transition: transform 0.1s ease, background 0.2s;
             font-family: 'Playpen Sans Hebrew', cursive, sans-serif;
         }
+
         .btn:active { transform: scale(0.98); }
-        
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); }
-
         .btn-success { background: var(--success); color: white; }
-        
         .btn-secondary { background: #e2e8f0; color: #334155; }
         .btn-secondary:hover { background: #cbd5e1; }
-
         .btn-danger { background: #ef4444; color: white; }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 16px;
-            align-items: start;
+        .dashboard-grid { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 12px; 
+            align-items: start; 
         }
 
-        @media (max-width: 900px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 900px) { 
+            .dashboard-grid { grid-template-columns: 1fr; } 
         }
 
         .btn-circle-rotation {
-            width: 190px;
-            height: 190px;
+            width: 130px; 
+            height: 130px; 
             border-radius: 50%;
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            color: white;
-            border: none;
-            font-weight: bold;
+            color: white; 
+            border: none; 
+            font-weight: bold; 
             font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-            margin: 0 auto 16px auto;
-            transition: transform 0.2s;
-            text-align: center;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); 
+            margin: 0 auto 10px auto;
+            transition: transform 0.2s; 
+            text-align: center; 
             padding: 8px;
             font-family: 'Playpen Sans Hebrew', cursive, sans-serif;
         }
+
         .btn-circle-rotation:hover { transform: scale(1.05); }
 
-        .stat-box {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        .stat-box { 
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); 
+            color: white; 
+            border-radius: 14px; 
+            padding: 12px; 
+            text-align: center; 
+            margin-bottom: 10px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
         }
-        .stat-number {
-            font-size: 36px;
-            font-weight: 800;
-            margin-top: 4px;
+
+        .stat-number { 
+            font-size: 28px; 
+            font-weight: 800; 
+            margin-top: 4px; 
         }
 
         .routine-item { 
@@ -146,10 +145,10 @@
             justify-content: space-between; 
             align-items: center; 
             background: var(--card-bg); 
-            padding: 14px 18px; 
+            padding: 10px 14px; 
             border-radius: 12px; 
-            margin-bottom: 10px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
             border: 1px solid #e2e8f0;
         }
 
@@ -157,51 +156,42 @@
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
-            padding: 12px 0; 
+            padding: 8px 0; 
             border-bottom: 1px solid #f1f5f9; 
             transition: opacity 0.2s;
         }
+
         .exercise-row:last-child { border-bottom: none; }
         .exercise-info { flex-grow: 1; }
-        .exercise-stats { font-size: 15px; color: var(--text-secondary); }
-        
-        .exercise-row.completed .exercise-info {
-            text-decoration: line-through;
-            color: #94a3b8;
-            opacity: 0.7;
-        }
+        .exercise-stats { font-size: 14px; color: var(--text-secondary); }
+        .exercise-row.completed .exercise-info { text-decoration: line-through; color: #94a3b8; opacity: 0.7; }
+        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--success); cursor: pointer; }
 
-        input[type="checkbox"] { 
-            width: 20px; 
-            height: 20px; 
-            accent-color: var(--success); 
-            cursor: pointer; 
-        }
-
-        .form-group { margin-bottom: 14px; text-align: right; }
-        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 15px; color: #334155; }
+        .form-group { margin-bottom: 10px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 14px; color: #334155; }
         .form-group input, .form-group select { 
             width: 100%; 
-            padding: 10px; 
+            padding: 8px; 
             border: 1px solid #cbd5e1; 
             border-radius: 8px; 
-            font-size: 16px; 
+            font-size: 15px; 
             box-sizing: border-box; 
             background: #f8fafc;
             font-family: 'Playpen Sans Hebrew', cursive, sans-serif;
         }
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: #fff;
+
+        .form-group input:focus, .form-group select:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            background: #fff; 
         }
         
         .exercise-form-box { 
             background: #f8fafc; 
             border: 1px solid #e2e8f0; 
-            padding: 14px; 
+            padding: 12px; 
             border-radius: 10px; 
-            margin-bottom: 14px; 
+            margin-bottom: 10px; 
         }
 
         .switch { position: relative; display: inline-block; width: 28px; height: 14px; }
@@ -211,41 +201,63 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(14px); }
 
-        .weights-rating { display: flex; gap: 8px; font-size: 28px; cursor: pointer; justify-content: center; margin-top: 10px; }
+        .weights-rating { 
+            display: flex; 
+            gap: 6px; 
+            font-size: 24px; 
+            cursor: pointer; 
+            justify-content: center; 
+            margin-top: 8px; 
+        }
+
         .weight-icon { filter: grayscale(100%); opacity: 0.25; transition: 0.2s transform; }
         .weight-icon.active { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
 
         .history-card { 
             background: var(--card-bg); 
             border-radius: 12px; 
-            padding: 14px; 
-            margin-bottom: 10px; 
+            padding: 12px; 
+            margin-bottom: 8px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
             cursor: pointer; 
             border-right: 5px solid var(--primary); 
-            border-top: 1px solid #e2e8f0;
-            border-left: 1px solid #e2e8f0;
+            border-top: 1px solid #e2e8f0; 
+            border-left: 1px solid #e2e8f0; 
             border-bottom: 1px solid #e2e8f0;
         }
-        .history-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9; font-size: 15px; color: #334155; }
+
+        .history-details { 
+            display: none; 
+            margin-top: 8px; 
+            padding-top: 8px; 
+            border-top: 1px solid #f1f5f9; 
+            font-size: 14px; 
+            color: #334155; 
+        }
+
         .history-card.open .history-details { display: block; }
+        
+        #app-header { 
+            display: none; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 16px; 
+        }
     </style>
 </head>
 <body>
     <div class="page-container">
         
-        <!-- כותרת ראשית -->
-        <div id="app-header" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div id="app-header">
             <h1 style="margin: 0;">האימונים שלי 💪</h1>
             <div style="font-size: 14px;">
                 <span id="welcome-user" style="font-weight: bold; margin-left: 10px;"></span>
-                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; margin: 0; font-size: 14px;" onclick="logout()">התנתק</button>
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; margin: 0; font-size: 13px;" onclick="logout()">התנתק</button>
             </div>
         </div>
 
-        <!-- 0. מסך התחברות / הרשמה -->
         <div id="view-auth" class="view active">
-            <div class="card" style="text-align: center; max-width: 400px; margin: 40px auto;">
+            <div class="card" style="text-align: center; max-width: 400px; margin: 20px auto;">
                 <h2 id="auth-title">התחברות לאימון שלי</h2>
                 
                 <div id="login-form">
@@ -256,60 +268,54 @@
                         <input type="password" id="login-password" placeholder="סיסמה">
                     </div>
                     <button class="btn btn-primary" onclick="login()">כניסה 💪</button>
-                    <p style="font-size: 15px; margin-top: 15px;">עוד אין לך חשבון? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">הירשמי כאן</a></p>
+                    <p style="font-size: 14px; margin-top: 12px;">עוד אין לך חשבון? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">הירשמי כאן</a></p>
                 </div>
-
+                
                 <div id="register-form" style="display: none;">
                     <div class="form-group">
                         <input type="text" id="reg-username" placeholder="שם משתמש (ללא רווחים)">
                     </div>
                     <div class="form-group">
-                        <input type="email" id="reg-email" placeholder="אימייל">
-                    </div>
-                    <div class="form-group">
                         <input type="password" id="reg-password" placeholder="סיסמה">
                     </div>
                     <button class="btn btn-success" onclick="register()">צור חשבון חדש ✨</button>
-                    <p style="font-size: 15px; margin-top: 15px;">כבר יש לך חשבון? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">התחברי כאן</a></p>
+                    <p style="font-size: 14px; margin-top: 12px;">כבר יש לך חשבון? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">התחברי כאן</a></p>
                 </div>
             </div>
         </div>
 
-        <!-- 1. מסך הבית -->
         <div id="view-dashboard" class="view">
             <div style="text-align: center;">
-                <button class="btn-circle-rotation" onclick="startNextInRotation()" style="width: 190px; height: 190px;">
-                    <span style="font-size: 28px;">🎯</span>
-                    <span style="font-size: 20px; margin-top: 3px;">התחל אימון מומלץ</span>
+                <button class="btn-circle-rotation" onclick="startNextInRotation()">
+                    <span style="font-size: 24px;">🎯</span>
+                    <span style="font-size: 16px; margin-top: 3px;">התחל אימון מומלץ</span>
                 </button>
             </div>
-
+            
             <div class="dashboard-grid">
                 <div class="card" style="margin: 0;">
                     <h2>האימונים שלי</h2>
                     <div id="routines-list">טוען...</div>
-                    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 16px 0;">
+                    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 12px 0;">
                     <button class="btn btn-secondary" onclick="showCreateRoutineView()">+ הוספת אימון חדש</button>
                     <button class="btn btn-danger" onclick="showDeleteRoutinesView()">🗑️ מחיקת אימון</button>
                 </div>
-
+                
                 <div>
                     <div class="stat-box">
-                        <div style="font-size: 15px; font-weight: 600;">אימונים השבוע</div>
+                        <div style="font-size: 14px; font-weight: 600;">אימונים השבוע</div>
                         <div id="weekly-workout-count" class="stat-number">0</div>
                     </div>
                     <div class="card" style="cursor: pointer;" onclick="showHistoryView()">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                             <h2>היסטוריית אימונים 📊</h2>
                             <span>➔</span>
                         </div>
-                        <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">לחצי כאן לצפייה בכל האימונים הקודמים, סינון לפי טווחי זמן ופירוט תרגילים.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. מסך היסטוריית אימונים -->
         <div id="view-history" class="view">
             <h2>היסטוריית אימונים 📊</h2>
             <div class="form-group">
@@ -325,50 +331,41 @@
             <button class="btn btn-secondary" onclick="loadDashboard()">חזור למסך הבית</button>
         </div>
 
-        <!-- 3. מסך מחיקת תוכניות -->
         <div id="view-delete-routines" class="view">
             <h2>מחיקת תוכניות אימון</h2>
-            <p style="font-size: 15px; color: var(--text-secondary);">סמני את התוכניות שתרצי למחוק:</p>
             <div id="delete-routines-list" class="card"></div>
             <button class="btn btn-danger" onclick="deleteSelectedRoutines()">מחק את התוכניות שנבחרו</button>
             <button class="btn btn-secondary" onclick="loadDashboard()">חזור למסך הבית</button>
         </div>
 
-        <!-- 4. מסך יצירת תוכנית חדשה -->
         <div id="view-create-routine" class="view">
             <h2>תוכנית חדשה</h2>
             <div class="card">
                 <div class="form-group">
-                    <label>שם האימון</label>
                     <input type="text" id="new-routine-name" placeholder="שם האימון" autocomplete="off">
                 </div>
-                <h3 style="margin-top: 20px;">תרגילים באימון</h3>
+                <h3 style="margin-top: 15px; font-size:16px;">תרגילים</h3>
                 <div id="exercises-inputs-container"></div>
                 <button class="btn btn-secondary" onclick="addExerciseInputRow()">➕ הוסף תרגיל נוסף</button>
-                <br><br>
                 <button class="btn btn-primary" onclick="createRoutine()">שמור אימון חדש</button>
                 <button class="btn btn-secondary" onclick="loadDashboard()">ביטול</button>
             </div>
         </div>
 
-        <!-- 5. מסך עריכת תוכנית קיימת -->
         <div id="view-edit-routine" class="view">
             <h2>עריכת אימון</h2>
             <div class="card">
                 <div class="form-group">
-                    <label>שם האימון</label>
                     <input type="text" id="edit-routine-name" placeholder="שם האימון" autocomplete="off">
                 </div>
-                <h3 style="margin-top: 20px;">תרגילים באימון</h3>
+                <h3 style="margin-top: 15px; font-size:16px;">תרגילים</h3>
                 <div id="edit-exercises-inputs-container"></div>
                 <button class="btn btn-secondary" onclick="addEditExerciseInputRow()">➕ הוסף תרגיל נוסף</button>
-                <br><br>
                 <button class="btn btn-primary" onclick="saveEditedRoutine()">שמור שינויים</button>
                 <button class="btn btn-secondary" onclick="loadDashboard()">ביטול</button>
             </div>
         </div>
 
-        <!-- 6. מסך אימון פעיל -->
         <div id="view-active-workout" class="view">
             <h2 id="active-routine-name">מתחילים...</h2>
             <div class="card" id="active-exercises-list"></div>
@@ -376,24 +373,22 @@
             <button class="btn btn-secondary" onclick="loadDashboard()">חזור למסך הבית</button>
         </div>
 
-        <!-- 7. מסך סיום ודירוג -->
         <div id="view-rating" class="view">
             <h2>איך היה? 🥵</h2>
-            <p style="font-size: 15px; color: var(--text-secondary);">דרגי את רמת הקושי לכל תרגיל (חובה לדרג לפני השמירה):</p>
             <div id="rating-exercises-list"></div>
             <button id="submit-btn" class="btn btn-primary" onclick="submitWorkout()">שמור ועדכן לפעם הבאה!</button>
         </div>
     </div>
 
     <script>
-        let currentExercises = [];
-        let completedExercisesIds = [];
+        let currentExercises = []; 
+        let completedExercisesIds = []; 
         let activeRoutineId = null;
-        let editingRoutineId = null;
-        let exerciseRatings = {};
+        let editingRoutineId = null; 
+        let exerciseRatings = {}; 
         let rawHistoryData = [];
         
-        let authToken = localStorage.getItem('auth_token');
+        let authToken = localStorage.getItem('auth_token'); 
         let currentUsername = localStorage.getItem('username');
 
         function showView(viewId) {
@@ -407,670 +402,596 @@
             if (authToken) {
                 options.headers['Authorization'] = `Bearer ${authToken.trim()}`;
             }
-            let response;
-            try {
-                response = await fetch(url, options);
-            } catch (err) {
-                throw new Error("חסימת רשת או שגיאת דפדפן פנימית. אנא רענני את הדף.");
-            }
-            if (response.status === 401) {
-                logout();
-                throw new Error("פג תוקף החיבור, אנא התחברי מחדש");
+            
+            let response = await fetch(url, options);
+            
+            if (response.status === 401) { 
+                logout(); 
+                throw new Error("פג תוקף החיבור"); 
             }
             return response;
         }
 
         function toggleAuthMode() {
-            const loginForm = document.getElementById('login-form');
+            const loginForm = document.getElementById('login-form'); 
             const regForm = document.getElementById('register-form');
             const title = document.getElementById('auth-title');
+            
             if (loginForm.style.display === 'none') {
-                loginForm.style.display = 'block';
-                regForm.style.display = 'none';
+                loginForm.style.display = 'block'; 
+                regForm.style.display = 'none'; 
                 title.innerText = 'התחברות לאימון שלי';
             } else {
-                loginForm.style.display = 'none';
-                regForm.style.display = 'block';
+                loginForm.style.display = 'none'; 
+                regForm.style.display = 'block'; 
                 title.innerText = 'יצירת חשבון חדש';
             }
         }
 
         async function login() {
-            const u = document.getElementById('login-username').value.trim();
+            const u = document.getElementById('login-username').value.trim(); 
             const p = document.getElementById('login-password').value.trim();
-            if (!u || !p) return alert('נא להזין שם משתמש וסיסמה');
-
-            const formData = new URLSearchParams();
-            formData.append('username', u);
+            
+            if (!u || !p) {
+                return alert('נא להזין שם משתמש וסיסמה');
+            }
+            
+            const formData = new URLSearchParams(); 
+            formData.append('username', u); 
             formData.append('password', p);
-
+            
             try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData
+                const res = await fetch('/api/login', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                    body: formData 
                 });
+                
                 if (res.ok) {
                     const data = await res.json();
-                    authToken = data.access_token;
+                    authToken = data.access_token; 
                     currentUsername = data.username;
-                    localStorage.setItem('auth_token', authToken);
+                    localStorage.setItem('auth_token', authToken); 
                     localStorage.setItem('username', currentUsername);
                     initApp();
                 } else {
-                    const err = await res.json();
-                    alert(err.detail || 'שם משתמש או סיסמה שגויים');
+                    alert('שם משתמש או סיסמה שגויים');
                 }
-            } catch(e) { alert('שגיאת תקשורת עם השרת'); }
+            } catch(e) { 
+                alert('שגיאת תקשורת'); 
+            }
         }
 
         async function register() {
             const u = document.getElementById('reg-username').value.trim();
-            const e = document.getElementById('reg-email').value.trim();
             const p = document.getElementById('reg-password').value.trim();
-            if (!u || !e || !p) return alert('נא למלא את כל השדות');
-
+            
+            if (!u || !p) {
+                return alert('נא למלא את כל השדות');
+            }
+            
+            // מעקף כדי שלא נצטרך את האימייל!
+            const dummyEmail = u + "@fitness.local"; 
+            
             try {
                 const res = await fetch('/api/register', {
-                    method: 'POST',
+                    method: 'POST', 
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({username: u, email: e, password: p})
+                    body: JSON.stringify({username: u, email: dummyEmail, password: p})
                 });
+                
                 if (res.ok) {
-                    alert('חשבון נוצר בהצלחה! כעת תוכלי להתחבר.');
+                    alert('חשבון נוצר בהצלחה!'); 
                     toggleAuthMode();
                     document.getElementById('login-username').value = u;
-                } else {
-                    const err = await res.json();
-                    alert(err.detail || 'שגיאה בהרשמה');
+                } else { 
+                    const err = await res.json(); 
+                    alert(err.detail || 'שגיאה בהרשמה'); 
                 }
-            } catch(e) { alert('שגיאת תקשורת'); }
+            } catch(e) { 
+                alert('שגיאת תקשורת'); 
+            }
         }
 
-        function logout() {
-            authToken = null;
-            currentUsername = null;
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('username');
-            initApp();
+        function logout() { 
+            authToken = null; 
+            currentUsername = null; 
+            localStorage.removeItem('auth_token'); 
+            localStorage.removeItem('username'); 
+            initApp(); 
         }
 
         function initApp() {
             if (authToken) {
                 document.getElementById('app-header').style.display = 'flex';
-                document.getElementById('welcome-user').innerText = `שלום, ${currentUsername}!`;
+                document.getElementById('welcome-user').innerText = `שלום, ${currentUsername}!`; 
                 loadDashboard();
-            } else {
-                document.getElementById('app-header').style.display = 'none';
-                showView('view-auth');
+            } else { 
+                document.getElementById('app-header').style.display = 'none'; 
+                showView('view-auth'); 
             }
         }
 
         async function loadDashboard() {
-            showView('view-dashboard');
-            const listDiv = document.getElementById('routines-list');
+            showView('view-dashboard'); 
+            const listDiv = document.getElementById('routines-list'); 
             listDiv.innerHTML = 'טוען...';
-
+            
             try {
-                const statsRes = await apiFetch('/api/weekly_stats');
+                const statsRes = await apiFetch('/api/weekly_stats'); 
                 const statsData = await statsRes.json();
                 document.getElementById('weekly-workout-count').innerText = statsData.weekly_count;
-            } catch(e) {
-                document.getElementById('weekly-workout-count').innerText = '-';
+            } catch(e) { 
+                document.getElementById('weekly-workout-count').innerText = '-'; 
             }
-
+            
             try {
-                const response = await apiFetch('/api/routines');
+                const response = await apiFetch('/api/routines'); 
                 const routines = await response.json();
-                
                 listDiv.innerHTML = '';
+                
                 if(routines.length === 0) {
-                    listDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">אין לך עדיין תוכניות אימון. צרי את הראשונה שלך עכשיו!</p>';
-                    return;
+                    return listDiv.innerHTML = '<p>אין לך אימונים עדיין.</p>';
                 }
+                
                 routines.forEach(rt => {
-                    const item = document.createElement('div');
-                    item.className = 'routine-item';
-                    item.innerHTML = `
-                        <span style="font-weight: bold; font-size: 16px;">${rt.name}</span>
-                        <div style="display: flex; gap: 6px;">
-                            <button class="btn btn-secondary" style="width: auto; padding: 6px 10px; margin: 0; background: #e2e8f0;" onclick="showEditRoutineView(${rt.id})" title="ערוך אימון">✏️</button>
-                            <button class="btn btn-primary" style="width: auto; padding: 6px 14px; margin: 0;" onclick="startWorkout(${rt.id})">התחל</button>
-                        </div>
-                    `;
-                    listDiv.appendChild(item);
+                    listDiv.innerHTML += `
+                        <div class="routine-item">
+                            <span style="font-weight:bold;">${rt.name}</span>
+                            <div style="display:flex;gap:4px;">
+                                <button class="btn btn-secondary" style="width:auto;padding:4px 8px;margin:0;" onclick="showEditRoutineView(${rt.id})">✏️</button>
+                                <button class="btn btn-primary" style="width:auto;padding:4px 10px;margin:0;" onclick="startWorkout(${rt.id})">התחל</button>
+                            </div>
+                        </div>`;
                 });
-            } catch (error) {
-                if(authToken) listDiv.innerHTML = 'שגיאה בטעינת התוכניות.';
+            } catch(error) { 
+                if(authToken) listDiv.innerHTML = 'שגיאה בטעינה.'; 
             }
         }
 
         async function startNextInRotation() {
             try {
                 const res = await apiFetch('/api/next_in_rotation');
-                if(res.ok) {
-                    const data = await res.json();
-                    startWorkout(data.routine_id);
+                if(res.ok) { 
+                    const data = await res.json(); 
+                    startWorkout(data.routine_id); 
                 } else {
-                    alert('לא נמצאו תוכניות זמינות. צרי תוכנית ראשונה כדי להתחיל!');
+                    alert('לא נמצאו תוכניות.');
                 }
-            } catch (e) {
-                alert('שגיאה בטעינת האימון הבא.');
+            } catch(e) { 
+                alert('שגיאה בטעינה.'); 
             }
         }
 
         async function showHistoryView() {
-            showView('view-history');
-            const container = document.getElementById('history-container');
-            container.innerHTML = 'טוען היסטוריה...';
+            showView('view-history'); 
+            const container = document.getElementById('history-container'); 
+            container.innerHTML = 'טוען...';
+            
             try {
-                const res = await apiFetch('/api/history');
+                const res = await apiFetch('/api/history'); 
                 rawHistoryData = await res.json();
-                document.getElementById('history-filter').value = 'all';
+                document.getElementById('history-filter').value = 'all'; 
                 renderHistoryList();
-            } catch (e) {
-                container.innerHTML = 'שגיאה בטעינת ההיסטוריה.';
+            } catch(e) { 
+                container.innerHTML = 'שגיאה.'; 
             }
         }
 
         function renderHistoryList() {
-            const container = document.getElementById('history-container');
+            const container = document.getElementById('history-container'); 
             const filterValue = document.getElementById('history-filter').value;
-            
             const now = new Date();
+            
             let filtered = rawHistoryData.filter(item => {
-                const safeDateStr = String(item.date).replace(' ', 'T');
-                const itemDate = new Date(safeDateStr);
-                const diffTime = now - itemDate;
-                const diffDays = diffTime / (1000 * 60 * 60 * 24);
-                if (filterValue === 'week') return diffDays <= 7;
-                if (filterValue === 'month') return diffDays <= 30;
-                if (filterValue === 'year') return diffDays <= 365;
+                const diffDays = (now - new Date(String(item.date).replace(' ', 'T'))) / (1000 * 60 * 60 * 24);
+                if (filterValue === 'week') return diffDays <= 7; 
+                if (filterValue === 'month') return diffDays <= 30; 
+                if (filterValue === 'year') return diffDays <= 365; 
                 return true;
             });
-
+            
             container.innerHTML = '';
+            
             if(filtered.length === 0) {
-                container.innerHTML = '<p>אין אימונים מתועדים בטווח הזמן הנבחר.</p>';
-                return;
+                return container.innerHTML = '<p>אין אימונים.</p>';
             }
-
+            
             filtered.forEach(item => {
-                const card = document.createElement('div');
+                const card = document.createElement('div'); 
                 card.className = 'history-card';
-                const safeDateStr = String(item.date).replace(' ', 'T');
-                const dateObj = new Date(safeDateStr);
-                const formattedDate = isNaN(dateObj.getTime()) ? item.date : dateObj.toLocaleDateString('he-IL') + ' ' + dateObj.toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'});
-
-                let logsHtml = '<ul style="margin: 0; padding-right: 20px;">';
+                
+                const dateObj = new Date(String(item.date).replace(' ', 'T')); 
+                const formattedDate = isNaN(dateObj.getTime()) ? item.date : dateObj.toLocaleDateString('he-IL');
+                
+                let logsHtml = '<ul style="margin:0;padding-right:20px;">';
                 item.logs.forEach(log => {
-                    const rpeLevel = Math.round(log.rpe_score / 2);
-                    const unitName = log.target_type === 'time' ? 'שניות' : 'חזרות';
-                    logsHtml += `<li><b>${log.exercise_name}</b>: ${log.weight_used} ק"ג | ${log.reps_performed} ${unitName} (קושי: ${rpeLevel}/5 🏋️‍♂️)</li>`;
+                    logsHtml += `<li><b>${log.exercise_name}</b>: ${log.weight_used}ק"ג | ${log.reps_performed} ${log.target_type==='time'?'שניות':'חזרות'}</li>`;
                 });
                 logsHtml += '</ul>';
-
+                
                 card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                    <div style="display:flex;justify-content:space-between;font-weight:bold;">
                         <span>${item.routine_name}</span>
-                        <span style="color: var(--text-secondary); font-size: 14px;">${formattedDate}</span>
+                        <span style="color:#64748b;font-size:13px;">${formattedDate}</span>
                     </div>
-                    <div class="history-details">
-                        ${item.logs.length > 0 ? logsHtml : 'אין תרגילים מתועדים'}
-                    </div>
-                `;
-                card.onclick = () => card.classList.toggle('open');
+                    <div class="history-details">${item.logs.length>0?logsHtml:'אין'}</div>`;
+                
+                card.onclick = () => card.classList.toggle('open'); 
                 container.appendChild(card);
             });
         }
 
         async function showDeleteRoutinesView() {
-            showView('view-delete-routines');
-            const container = document.getElementById('delete-routines-list');
+            showView('view-delete-routines'); 
+            const container = document.getElementById('delete-routines-list'); 
             container.innerHTML = 'טוען...';
+            
             try {
-                const response = await apiFetch('/api/routines');
+                const response = await apiFetch('/api/routines'); 
                 const routines = await response.json();
                 
                 container.innerHTML = '';
+                
                 if(routines.length === 0) {
-                    container.innerHTML = '<p>אין תוכניות למחיקה.</p>';
-                    return;
+                    return container.innerHTML = '<p>אין תוכניות.</p>';
                 }
+                
                 routines.forEach(rt => {
-                    const row = document.createElement('div');
-                    row.className = 'exercise-row';
-                    row.innerHTML = `
-                        <span style="font-weight: bold;">${rt.name}</span>
-                        <input type="checkbox" class="delete-routine-checkbox" value="${rt.id}">
-                    `;
-                    container.appendChild(row);
+                    container.innerHTML += `
+                        <div class="exercise-row">
+                            <span style="font-weight:bold;">${rt.name}</span>
+                            <input type="checkbox" class="delete-routine-checkbox" value="${rt.id}">
+                        </div>`;
                 });
-            } catch (e) {
-                container.innerHTML = 'שגיאה בטעינת התוכניות.';
+            } catch(e) { 
+                container.innerHTML = 'שגיאה.'; 
             }
         }
 
         async function deleteSelectedRoutines() {
-            const checkboxes = document.querySelectorAll('.delete-routine-checkbox:checked');
-            const idsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value));
-
-            if(idsToDelete.length === 0) {
-                alert('לא בחרת אף תוכנית למחיקה!');
-                return;
-            }
-
-            if(!confirm(`האם את בטוחה שברצונך למחוק ${idsToDelete.length} תוכניות נבחרות?`)) return;
-
+            const idsToDelete = Array.from(document.querySelectorAll('.delete-routine-checkbox:checked')).map(cb => parseInt(cb.value));
+            
+            if(idsToDelete.length === 0 || !confirm('למחוק?')) return;
+            
             try {
-                const res = await apiFetch('/api/routines/delete_batch', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ routine_ids: idsToDelete })
+                const res = await apiFetch('/api/routines/delete_batch', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ routine_ids: idsToDelete }) 
                 });
-                if(res.ok) {
-                    alert('התוכניות נמחקו בהצלחה!');
-                    loadDashboard();
-                } else {
-                    alert('שגיאה במחיקת התוכניות.');
+                
+                if(res.ok) { 
+                    alert('נמחק!'); 
+                    loadDashboard(); 
                 }
-            } catch (e) { alert('שגיאת תקשורת.'); }
+            } catch(e) { 
+                alert('שגיאה.'); 
+            }
         }
 
-        function showCreateRoutineView() {
-            document.getElementById('new-routine-name').value = '';
-            document.getElementById('exercises-inputs-container').innerHTML = '';
-            addExerciseInputRow();
-            showView('view-create-routine');
+        function showCreateRoutineView() { 
+            document.getElementById('new-routine-name').value = ''; 
+            document.getElementById('exercises-inputs-container').innerHTML = ''; 
+            addExerciseInputRow(); 
+            showView('view-create-routine'); 
         }
 
         function addExerciseInputRow(data = null) {
-            const container = document.getElementById('exercises-inputs-container');
-            const rowBox = document.createElement('div');
+            const container = document.getElementById('exercises-inputs-container'); 
+            const rowBox = document.createElement('div'); 
             rowBox.className = 'exercise-form-box';
             
-            const nameVal = data ? data.exercise_name : '';
-            const equipVal = data ? data.equipment_type : 'BODYWEIGHT';
-            const stepVal = data ? data.increment_step : 0;
-            const weightVal = data ? data.prescribed_weight : 0;
-            const repsVal = data ? data.prescribed_reps_target : 10;
-            const setsVal = data ? data.prescribed_sets : 3;
             const isTime = data && data.target_type === 'time';
-
+            
             rowBox.innerHTML = `
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>שם התרגיל</label>
-                    <input type="text" class="ex-name" placeholder="שם התרגיל" value="${nameVal}" autocomplete="off">
+                <div class="form-group">
+                    <input type="text" class="ex-name" placeholder="שם התרגיל" value="${data?data.exercise_name:''}" autocomplete="off">
                 </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <div style="flex: 1;">
-                        <label>סוג ציוד</label>
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <div style="flex:1;">
                         <select class="ex-equipment" onchange="updateDefaultStep(this)">
-                            <option value="BODYWEIGHT" ${equipVal === 'BODYWEIGHT' ? 'selected' : ''}>ללא</option>
-                            <option value="FREE_WEIGHT" ${equipVal === 'FREE_WEIGHT' ? 'selected' : ''}>משקולות חופשיות</option>
-                            <option value="MACHINE" ${equipVal === 'MACHINE' ? 'selected' : ''}>מכונה</option>
+                            <option value="BODYWEIGHT" ${data&&data.equipment_type==='BODYWEIGHT'?'selected':''}>ללא משקל</option>
+                            <option value="FREE_WEIGHT" ${data&&data.equipment_type==='FREE_WEIGHT'?'selected':''}>משקולות</option>
+                            <option value="MACHINE" ${data&&data.equipment_type==='MACHINE'?'selected':''}>מכונה</option>
                         </select>
                     </div>
-                    <div style="flex: 1;">
-                        <label>קפיצה (ק"ג)</label>
-                        <input type="number" class="ex-step" value="${stepVal}" step="0.5" min="0">
+                    <div style="flex:1;">
+                        <input type="number" class="ex-step" placeholder="קפיצה (ק״ג)" value="${data?data.increment_step:0}" step="0.5" min="0">
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                    <div style="flex: 1;">
-                        <label>משקל (ק"ג)</label>
-                        <input type="number" class="ex-weight" value="${weightVal}" min="0" step="0.5">
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <div style="flex:1;">
+                        <input type="number" class="ex-weight" placeholder="משקל" value="${data?data.prescribed_weight:0}" min="0" step="0.5">
                     </div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <label class="target-label" style="margin:0;">${isTime ? 'זמן (שניות)' : 'חזרות'}</label>
+                    <div style="flex:1;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+                            <label class="target-label" style="margin:0;font-size:12px;">${isTime?'שניות':'חזרות'}</label>
                             <label class="switch">
-                                <input type="checkbox" class="ex-target-switch" ${isTime ? 'checked' : ''} onchange="toggleTargetType(this)">
+                                <input type="checkbox" class="ex-target-switch" ${isTime?'checked':''} onchange="toggleTargetType(this)">
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <input type="number" class="ex-reps" value="${repsVal}" min="1" step="1">
+                        <input type="number" class="ex-reps" value="${data?data.prescribed_reps_target:10}" min="1">
                     </div>
-                    <div style="flex: 1;">
-                        <label>סטים</label>
-                        <input type="number" class="ex-sets" value="${setsVal}" min="1" step="1">
+                    <div style="flex:1;">
+                        <label style="margin:0;font-size:12px;">סטים</label>
+                        <input type="number" class="ex-sets" value="${data?data.prescribed_sets:3}" min="1">
                     </div>
                 </div>
-                <button type="button" class="btn btn-danger btn-delete-row" style="margin: 0;">מחק תרגיל</button>
+                <button type="button" class="btn btn-danger btn-delete-row" style="margin:0;">מחק</button>
             `;
-            rowBox.querySelector('.btn-delete-row').onclick = () => rowBox.remove();
+            
+            rowBox.querySelector('.btn-delete-row').onclick = () => rowBox.remove(); 
             container.appendChild(rowBox);
         }
 
         async function showEditRoutineView(routineId) {
-            editingRoutineId = routineId;
+            editingRoutineId = routineId; 
             showView('view-edit-routine');
-            document.getElementById('edit-routine-name').value = 'טוען...';
+            document.getElementById('edit-routine-name').value = 'טוען...'; 
             document.getElementById('edit-exercises-inputs-container').innerHTML = '';
-
+            
             try {
-                const res = await apiFetch(`/api/routines/${routineId}/details`);
+                const res = await apiFetch(`/api/routines/${routineId}/details`); 
                 const data = await res.json();
+                
                 document.getElementById('edit-routine-name').value = data.routine.name;
                 data.exercises.forEach(ex => addEditExerciseInputRow(ex));
-            } catch (e) {
-                alert('שגיאה בטעינת פרטי האימון לעריכה.');
-                loadDashboard();
+            } catch(e) { 
+                alert('שגיאה'); 
+                loadDashboard(); 
             }
         }
 
         function addEditExerciseInputRow(data = null) {
-            const container = document.getElementById('edit-exercises-inputs-container');
-            const rowBox = document.createElement('div');
+            const container = document.getElementById('edit-exercises-inputs-container'); 
+            const rowBox = document.createElement('div'); 
             rowBox.className = 'exercise-form-box';
             
-            const nameVal = data ? data.exercise_name : '';
-            const equipVal = data ? data.equipment_type : 'BODYWEIGHT';
-            const stepVal = data ? data.increment_step : 0;
-            const weightVal = data ? data.prescribed_weight : 0;
-            const repsVal = data ? data.prescribed_reps_target : 10;
-            const setsVal = data ? data.prescribed_sets : 3;
             const isTime = data && data.target_type === 'time';
-
+            
             rowBox.innerHTML = `
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>שם התרגיל</label>
-                    <input type="text" class="ex-name" placeholder="שם התרגיל" value="${nameVal}" autocomplete="off">
+                <div class="form-group">
+                    <input type="text" class="ex-name" placeholder="שם התרגיל" value="${data?data.exercise_name:''}" autocomplete="off">
                 </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <div style="flex: 1;">
-                        <label>סוג ציוד</label>
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <div style="flex:1;">
                         <select class="ex-equipment" onchange="updateDefaultStep(this)">
-                            <option value="BODYWEIGHT" ${equipVal === 'BODYWEIGHT' ? 'selected' : ''}>ללא</option>
-                            <option value="FREE_WEIGHT" ${equipVal === 'FREE_WEIGHT' ? 'selected' : ''}>משקולות חופשיות</option>
-                            <option value="MACHINE" ${equipVal === 'MACHINE' ? 'selected' : ''}>מכונה</option>
+                            <option value="BODYWEIGHT" ${data&&data.equipment_type==='BODYWEIGHT'?'selected':''}>ללא משקל</option>
+                            <option value="FREE_WEIGHT" ${data&&data.equipment_type==='FREE_WEIGHT'?'selected':''}>משקולות</option>
+                            <option value="MACHINE" ${data&&data.equipment_type==='MACHINE'?'selected':''}>מכונה</option>
                         </select>
                     </div>
-                    <div style="flex: 1;">
-                        <label>קפיצה (ק"ג)</label>
-                        <input type="number" class="ex-step" value="${stepVal}" step="0.5" min="0">
+                    <div style="flex:1;">
+                        <input type="number" class="ex-step" placeholder="קפיצה (ק״ג)" value="${data?data.increment_step:0}" step="0.5" min="0">
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                    <div style="flex: 1;">
-                        <label>משקל התחלתי (ק"ג)</label>
-                        <input type="number" class="ex-weight" value="${weightVal}" min="0" step="0.5">
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <div style="flex:1;">
+                        <input type="number" class="ex-weight" placeholder="משקל" value="${data?data.prescribed_weight:0}" min="0" step="0.5">
                     </div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <label class="target-label" style="margin: 0;">${isTime ? 'זמן (שניות)' : 'חזרות'}</label>
+                    <div style="flex:1;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+                            <label class="target-label" style="margin:0;font-size:12px;">${isTime?'שניות':'חזרות'}</label>
                             <label class="switch">
-                                <input type="checkbox" class="ex-target-switch" ${isTime ? 'checked' : ''} onchange="toggleTargetType(this)">
+                                <input type="checkbox" class="ex-target-switch" ${isTime?'checked':''} onchange="toggleTargetType(this)">
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <input type="number" class="ex-reps" value="${repsVal}" min="1" step="1">
+                        <input type="number" class="ex-reps" value="${data?data.prescribed_reps_target:10}" min="1">
                     </div>
-                    <div style="flex: 1;">
-                        <label>סטים</label>
-                        <input type="number" class="ex-sets" value="${setsVal}" min="1" step="1">
+                    <div style="flex:1;">
+                        <label style="margin:0;font-size:12px;">סטים</label>
+                        <input type="number" class="ex-sets" value="${data?data.prescribed_sets:3}" min="1">
                     </div>
                 </div>
-                <button type="button" class="btn btn-danger btn-delete-row" style="margin: 0;">מחק תרגיל</button>
+                <button type="button" class="btn btn-danger btn-delete-row" style="margin:0;">מחק</button>
             `;
-            rowBox.querySelector('.btn-delete-row').onclick = () => rowBox.remove();
+            
+            rowBox.querySelector('.btn-delete-row').onclick = () => rowBox.remove(); 
             container.appendChild(rowBox);
         }
 
         async function saveEditedRoutine() {
-            const name = document.getElementById('edit-routine-name').value.trim();
-            if(!name) return alert('חובה להזין שם לאימון');
-
+            const name = document.getElementById('edit-routine-name').value.trim(); 
+            if(!name) return alert('חובה שם');
+            
             const rows = document.querySelectorAll('#edit-exercises-inputs-container .exercise-form-box');
-            if(rows.length === 0) return alert('חובה להוסיף לפחות תרגיל אחד');
-
-            const exercisesList = [];
-            for(let row of rows) {
-                const exName = row.querySelector('.ex-name').value.trim();
-                const step = parseFloat(row.querySelector('.ex-step').value);
-                const weight = parseFloat(row.querySelector('.ex-weight').value);
-                const reps = parseFloat(row.querySelector('.ex-reps').value);
-                const sets = parseFloat(row.querySelector('.ex-sets').value);
-                
-                if(!exName) return alert('יש לוודא שלכל תרגיל יש שם');
-                if (isNaN(weight) || isNaN(step) || isNaN(reps) || isNaN(sets)) return alert('נא למלא את כל הערכים המספריים עבור התרגיל: ' + exName);
-
-                exercisesList.push({ 
-                    exercise_name: exName, 
-                    equipment_type: row.querySelector('.ex-equipment').value, 
-                    increment_step: step, 
-                    prescribed_weight: weight, 
-                    prescribed_reps_target: reps, 
-                    prescribed_sets: sets,
-                    target_type: row.querySelector('.ex-target-switch').checked ? 'time' : 'reps' 
-                });
-            }
-
+            
+            const exercisesList = Array.from(rows).map(row => ({
+                exercise_name: row.querySelector('.ex-name').value.trim(), 
+                equipment_type: row.querySelector('.ex-equipment').value,
+                increment_step: parseFloat(row.querySelector('.ex-step').value||0), 
+                prescribed_weight: parseFloat(row.querySelector('.ex-weight').value||0),
+                prescribed_reps_target: parseFloat(row.querySelector('.ex-reps').value||10), 
+                prescribed_sets: parseFloat(row.querySelector('.ex-sets').value||3),
+                target_type: row.querySelector('.ex-target-switch').checked ? 'time' : 'reps'
+            }));
+            
             try {
-                const res = await apiFetch(`/api/routines/${editingRoutineId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, description: '', exercises: exercisesList })
+                const res = await apiFetch(`/api/routines/${editingRoutineId}`, { 
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ name: name, description: '', exercises: exercisesList }) 
                 });
                 
-                if(!res.ok) {
-                    let errorMsg = `שגיאה ${res.status}`;
-                    try {
-                        const err = await res.json();
-                        if (typeof err.detail === 'string') errorMsg = err.detail;
-                        else if (Array.isArray(err.detail) && err.detail[0]) errorMsg = err.detail[0].msg;
-                    } catch(parseErr) {}
-                    return alert(errorMsg);
+                if(res.ok) {
+                    loadDashboard(); 
+                } else {
+                    alert('שגיאה בעריכה');
                 }
-                
-                alert('האימון עודכן בהצלחה!');
-                loadDashboard();
-            } catch (e) { alert(e.message || 'שגיאת תקשורת'); }
+            } catch(e) { 
+                alert('שגיאה'); 
+            }
         }
 
-        function toggleTargetType(checkboxEl) {
-            const rowBox = checkboxEl.closest('.exercise-form-box');
-            const label = rowBox.querySelector('.target-label');
-            label.innerText = checkboxEl.checked ? 'זמן (שניות)' : 'חזרות';
+        function toggleTargetType(cb) { 
+            cb.closest('.exercise-form-box').querySelector('.target-label').innerText = cb.checked ? 'שניות' : 'חזרות'; 
         }
-
-        function updateDefaultStep(selectEl) {
-            const rowBox = selectEl.closest('.exercise-form-box');
-            const stepInput = rowBox.querySelector('.ex-step');
-            if (selectEl.value === 'FREE_WEIGHT') stepInput.value = '2';
-            else if (selectEl.value === 'MACHINE') stepInput.value = '5';
-            else stepInput.value = '0';
+        
+        function updateDefaultStep(sel) { 
+            sel.closest('.exercise-form-box').querySelector('.ex-step').value = sel.value === 'FREE_WEIGHT' ? '2' : sel.value === 'MACHINE' ? '5' : '0'; 
         }
 
         async function createRoutine() {
-            const name = document.getElementById('new-routine-name').value.trim();
-            if(!name) return alert('חובה להזין שם לאימון');
-
+            const name = document.getElementById('new-routine-name').value.trim(); 
+            if(!name) return alert('חובה שם');
+            
             const rows = document.querySelectorAll('#exercises-inputs-container .exercise-form-box');
-            if(rows.length === 0) return alert('חובה להוסיף לפחות תרגיל אחד');
-
-            const exercisesList = [];
-            for(let row of rows) {
-                const exName = row.querySelector('.ex-name').value.trim();
-                const step = parseFloat(row.querySelector('.ex-step').value);
-                const weight = parseFloat(row.querySelector('.ex-weight').value);
-                const reps = parseFloat(row.querySelector('.ex-reps').value);
-                const sets = parseFloat(row.querySelector('.ex-sets').value);
-                
-                if(!exName) return alert('יש לוודא שלכל תרגיל יש שם');
-                if (isNaN(weight) || isNaN(step) || isNaN(reps) || isNaN(sets)) return alert('נא למלא את כל הערכים המספריים עבור התרגיל: ' + exName);
-
-                exercisesList.push({ 
-                    exercise_name: exName, 
-                    equipment_type: row.querySelector('.ex-equipment').value, 
-                    increment_step: step, 
-                    prescribed_weight: weight, 
-                    prescribed_reps_target: reps, 
-                    prescribed_sets: sets,
-                    target_type: row.querySelector('.ex-target-switch').checked ? 'time' : 'reps'
-                });
-            }
-
+            
+            const exercisesList = Array.from(rows).map(row => ({
+                exercise_name: row.querySelector('.ex-name').value.trim(), 
+                equipment_type: row.querySelector('.ex-equipment').value,
+                increment_step: parseFloat(row.querySelector('.ex-step').value||0), 
+                prescribed_weight: parseFloat(row.querySelector('.ex-weight').value||0),
+                prescribed_reps_target: parseFloat(row.querySelector('.ex-reps').value||10), 
+                prescribed_sets: parseFloat(row.querySelector('.ex-sets').value||3),
+                target_type: row.querySelector('.ex-target-switch').checked ? 'time' : 'reps'
+            }));
+            
             try {
-                const resRoutine = await apiFetch('/api/routines', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, description: '', exercises: exercisesList })
+                const res = await apiFetch('/api/routines', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ name: name, exercises: exercisesList }) 
                 });
                 
-                if(!resRoutine.ok) {
-                    let errorMsg = `השרת החזיר שגיאה ${resRoutine.status}`;
-                    try {
-                        const err = await resRoutine.json();
-                        if (typeof err.detail === 'string') errorMsg = err.detail;
-                        else if (Array.isArray(err.detail) && err.detail[0]) errorMsg = err.detail[0].msg;
-                    } catch(parseErr) {}
-                    return alert(errorMsg);
+                if(res.ok) {
+                    loadDashboard(); 
+                } else {
+                    alert('שגיאה');
                 }
-
-                alert('האימון נוצר בהצלחה!');
-                loadDashboard();
-            } catch (e) { 
-                alert(e.message || 'שגיאת תקשורת בשרת'); 
+            } catch(e) { 
+                alert('שגיאה'); 
             }
         }
 
         async function startWorkout(routineId) {
-            activeRoutineId = routineId;
+            activeRoutineId = routineId; 
             showView('view-active-workout');
-            const listDiv = document.getElementById('active-exercises-list');
-            listDiv.innerHTML = 'טוען תרגילים...';
-            document.getElementById('active-routine-name').innerText = 'טוען...';
-
+            const listDiv = document.getElementById('active-exercises-list'); 
+            listDiv.innerHTML = 'טוען...';
+            
             try {
-                const response = await apiFetch(`/routine/${routineId}/next_workout`);
+                const response = await apiFetch(`/routine/${routineId}/next_workout`); 
                 const data = await response.json();
                 
-                currentExercises = data.exercises;
+                currentExercises = data.exercises; 
                 document.getElementById('active-routine-name').innerText = data.routine_name;
-                
                 listDiv.innerHTML = '';
-                if(currentExercises.length === 0) {
-                    listDiv.innerHTML = '<p>אין תרגילים בתוכנית זו.</p>';
-                    return;
-                }
-
+                
                 currentExercises.forEach(ex => {
-                    const unitLabel = ex.target_type === 'time' ? 'שניות' : 'חזרות';
-                    const row = document.createElement('div');
-                    row.className = 'exercise-row';
-                    row.id = `ex-row-${ex.routine_exercise_id}`;
-                    row.innerHTML = `
-                        <div class="exercise-info">
-                            <div class="card-title">${ex.exercise_name}</div>
-                            <div class="exercise-stats">
-                                ${ex.sets} סטים | ${ex.reps_target} ${unitLabel} | <strong>${ex.weight} ק"ג</strong>
+                    listDiv.innerHTML += `
+                        <div class="exercise-row" id="ex-row-${ex.routine_exercise_id}">
+                            <div class="exercise-info">
+                                <div class="card-title">${ex.exercise_name}</div>
+                                <div class="exercise-stats">${ex.sets} סטים | ${ex.reps_target} ${ex.target_type==='time'?'שניות':'חזרות'} | <strong>${ex.weight} ק"ג</strong></div>
+                                <div style="font-size:11px;color:var(--primary);">${ex.basis}</div>
                             </div>
-                            <div style="font-size: 12px; color: var(--primary); margin-top:2px;">${ex.basis}</div>
-                        </div>
-                        <input type="checkbox" id="check-${ex.routine_exercise_id}" value="${ex.routine_exercise_id}" onchange="toggleExerciseCompletion(${ex.routine_exercise_id})">
-                    `;
-                    listDiv.appendChild(row);
+                            <input type="checkbox" id="check-${ex.routine_exercise_id}" value="${ex.routine_exercise_id}" onchange="toggleExerciseCompletion(${ex.routine_exercise_id})">
+                        </div>`;
                 });
-            } catch (error) {
-                listDiv.innerHTML = 'שגיאה בטעינת האימון.';
+            } catch(e) { 
+                listDiv.innerHTML = 'שגיאה בטעינת האימון.'; 
             }
         }
 
-        function toggleExerciseCompletion(routineExerciseId) {
-            const checkbox = document.getElementById(`check-${routineExerciseId}`);
-            const row = document.getElementById(`ex-row-${routineExerciseId}`);
-            if (checkbox.checked) row.classList.add('completed');
-            else row.classList.remove('completed');
+        function toggleExerciseCompletion(id) {
+            const cb = document.getElementById(`check-${id}`); 
+            const row = document.getElementById(`ex-row-${id}`);
+            if (cb.checked) {
+                row.classList.add('completed'); 
+            } else {
+                row.classList.remove('completed');
+            }
         }
 
         function finishWorkoutPhase() {
-            const checkboxes = document.querySelectorAll('#active-exercises-list input[type="checkbox"]:checked');
-            completedExercisesIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-
-            if(completedExercisesIds.length === 0) return alert('לא סימנת אף תרגיל שביצעת!');
-
-            showView('view-rating');
-            const ratingDiv = document.getElementById('rating-exercises-list');
-            ratingDiv.innerHTML = '';
+            completedExercisesIds = Array.from(document.querySelectorAll('#active-exercises-list input[type="checkbox"]:checked')).map(cb => parseInt(cb.value));
+            if(completedExercisesIds.length === 0) return alert('לא סומנו תרגילים!');
+            
+            showView('view-rating'); 
+            const ratingDiv = document.getElementById('rating-exercises-list'); 
+            ratingDiv.innerHTML = ''; 
             exerciseRatings = {};
-
+            
             currentExercises.forEach(ex => {
                 if(completedExercisesIds.includes(ex.routine_exercise_id)) {
                     exerciseRatings[ex.routine_exercise_id] = 0;
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="card-title">${ex.exercise_name}</div>
-                        <div style="text-align: center; font-size: 15px; color: var(--text-secondary);">רמת קושי:</div>
-                        <div class="weights-rating" id="rating-box-${ex.routine_exercise_id}">
-                            <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 1)">🏋️‍♂️</span>
-                            <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 2)">🏋️‍♂️</span>
-                            <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 3)">🏋️‍♂️</span>
-                            <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 4)">🏋️‍♂️</span>
-                            <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 5)">🏋️‍♂️</span>
-                        </div>
-                    `;
-                    ratingDiv.appendChild(card);
+                    ratingDiv.innerHTML += `
+                        <div class="card">
+                            <div class="card-title">${ex.exercise_name}</div>
+                            <div class="weights-rating" id="rating-box-${ex.routine_exercise_id}">
+                                <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 1)">🏋️‍♂️</span>
+                                <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 2)">🏋️‍♂️</span>
+                                <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 3)">🏋️‍♂️</span>
+                                <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 4)">🏋️‍♂️</span>
+                                <span class="weight-icon" onclick="setRating(${ex.routine_exercise_id}, 5)">🏋️‍♂️</span>
+                            </div>
+                        </div>`;
                 }
             });
         }
 
         function setRating(reId, level) {
-            exerciseRatings[reId] = level;
-            const box = document.getElementById(`rating-box-${reId}`);
-            const icons = box.querySelectorAll('.weight-icon');
-            icons.forEach((icon, index) => {
-                if (index < level) icon.classList.add('active');
-                else icon.classList.remove('active');
+            exerciseRatings[reId] = level; 
+            const icons = document.getElementById(`rating-box-${reId}`).querySelectorAll('.weight-icon');
+            icons.forEach((icon, index) => { 
+                if(index < level) {
+                    icon.classList.add('active'); 
+                } else {
+                    icon.classList.remove('active');
+                }
             });
         }
 
         async function submitWorkout() {
             for(let reId of completedExercisesIds) {
-                if(!exerciseRatings[reId] || exerciseRatings[reId] === 0) {
-                    return alert('חובה לדרג את רמת הקושי לכל התרגילים שסימנת!');
-                }
+                if(!exerciseRatings[reId]) return alert('יש לדרג הכל!');
             }
-
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
+            
+            const btn = document.getElementById('submit-btn'); 
+            btn.disabled = true; 
             btn.innerText = 'שומר...';
-
+            
             const exercisesData = [];
+            
             currentExercises.forEach(ex => {
                 if(completedExercisesIds.includes(ex.routine_exercise_id)) {
-                    const rpeValue = exerciseRatings[ex.routine_exercise_id] * 2;
                     const logs = [];
-                    for(let i = 1; i <= ex.sets; i++) {
-                        logs.push({ set_number: i, reps_performed: ex.reps_target, weight_used: ex.weight, rpe_score: rpeValue });
+                    for(let i=1; i<=ex.sets; i++) {
+                        logs.push({ 
+                            set_number: i, 
+                            reps_performed: ex.reps_target, 
+                            weight_used: ex.weight, 
+                            rpe_score: exerciseRatings[ex.routine_exercise_id]*2 
+                        });
                     }
                     exercisesData.push({ routine_exercise_id: ex.routine_exercise_id, logs: logs });
                 }
             });
-
+            
             try {
-                const response = await apiFetch(`/routine/${activeRoutineId}/complete`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ notes: "", exercises: exercisesData })
+                const res = await apiFetch(`/routine/${activeRoutineId}/complete`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ notes: "", exercises: exercisesData }) 
                 });
                 
-                if(response.ok) {
-                    alert('💪 אלופה! האימון נשמר וההמלצות לפעם הבאה עודכנו.');
-                    loadDashboard();
+                if(res.ok) {
+                    loadDashboard(); 
                 } else {
-                    alert('הייתה בעיה בשמירה.');
+                    alert('שגיאה בשמירה');
                 }
-            } catch (error) {
-                alert('שגיאת תקשורת.');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'שמור ועדכן לפעם הבאה!';
+            } catch(e) { 
+                alert('שגיאה.'); 
+            } finally { 
+                btn.disabled = false; 
+                btn.innerText = 'שמור ועדכן לפעם הבאה!'; 
             }
         }
-
-        // טעינה ראשונית של האפליקציה
+        
         window.onload = initApp;
     </script>
 </body>

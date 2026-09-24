@@ -22,13 +22,8 @@ from pathlib import Path
 
 from database import get_db, init_db, seed_demo_data
 from progression_strategies import (
-    Difficulty,
-    EquipmentType,
-    ExerciseConfig,
-    Prescription,
-    ProgressionEngine,
-    SessionResult,
-    get_strategy,
+    Difficulty, EquipmentType, ExerciseConfig, Prescription,
+    ProgressionEngine, SessionResult, get_strategy,
 )
 
 SECRET_KEY = "topazi-super-secret-key-fitness" 
@@ -44,22 +39,15 @@ def get_password_hash(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def get_current_user(token: str = Depends(oauth2_scheme), conn: Connection = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
+        if username is None: raise credentials_exception
+    except JWTError: raise credentials_exception
     
     user = conn.execute(text("SELECT id, username FROM users WHERE username = :u"), {"u": username}).mappings().first()
-    if user is None:
-        raise credentials_exception
+    if user is None: raise credentials_exception
     return dict(user)
 
 @asynccontextmanager
@@ -84,18 +72,13 @@ class UserRegister(BaseModel):
 def register_user(user: UserRegister, conn: Connection = Depends(get_db)):
     try:
         existing = conn.execute(text("SELECT id FROM users WHERE username = :u OR email = :e"), {"u": user.username, "e": user.email}).first()
-        if existing:
-            raise HTTPException(status_code=400, detail="שם המשתמש או האימייל כבר קיימים במערכת.")
+        if existing: raise HTTPException(status_code=400, detail="שם המשתמש כבר קיים במערכת.")
         
         hashed_password = get_password_hash(user.password)
-        conn.execute(
-            text("INSERT INTO users (username, email, password_hash) VALUES (:u, :e, :p)"),
-            {"u": user.username, "e": user.email, "p": hashed_password}
-        )
+        conn.execute(text("INSERT INTO users (username, email, password_hash) VALUES (:u, :e, :p)"), {"u": user.username, "e": user.email, "p": hashed_password})
         conn.commit()
         return {"message": "המשתמש נוצר בהצלחה!"}
-    except HTTPException:
-        raise
+    except HTTPException: raise
     except Exception as e:
         conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -150,60 +133,40 @@ class RoutineDeleteBatch(BaseModel):
     routine_ids: list[int]
 
 def _fetch_routine(conn: Connection, routine_id: int, user_id: int) -> dict:
-    row = conn.execute(
-        text("SELECT id, name FROM routines WHERE id = :id AND user_id = :uid"),
-        {"id": routine_id, "uid": user_id},
-    ).mappings().first()
-    if row is None:
-        raise HTTPException(status_code=404, detail="Routine not found or access denied")
+    row = conn.execute(text("SELECT id, name FROM routines WHERE id = :id AND user_id = :uid"), {"id": routine_id, "uid": user_id}).mappings().first()
+    if row is None: raise HTTPException(status_code=404, detail="Routine not found or access denied")
     return dict(row)
 
 def _fetch_routine_exercises(conn: Connection, routine_id: int) -> list[dict]:
     rows = conn.execute(
         text("""
-            SELECT re.id AS routine_exercise_id, re.exercise_id, re.prescribed_weight, re.prescribed_reps_target, re.prescribed_sets, re.consecutive_easy_count, re.target_type, e.name AS exercise_name, e.equipment_type, e.increment_step, e.min_reps_target, e.max_reps_target, e.max_weight_limit
-            FROM routine_exercises re
-            JOIN exercises e ON e.id = re.exercise_id
-            WHERE re.routine_id = :routine_id
-            ORDER BY re.display_order
-        """),
-        {"routine_id": routine_id},
+            SELECT re.id AS routine_exercise_id, re.exercise_id, re.prescribed_weight, re.prescribed_reps_target, re.prescribed_sets, re.consecutive_easy_count, re.target_type, re.initial_weight, re.initial_target, e.name AS exercise_name, e.equipment_type, e.increment_step
+            FROM routine_exercises re JOIN exercises e ON e.id = re.exercise_id
+            WHERE re.routine_id = :routine_id ORDER BY re.display_order
+        """), {"routine_id": routine_id},
     ).mappings().all()
     return [dict(r) for r in rows]
 
 def _fetch_last_session_result(conn: Connection, routine_exercise_id: int, reps_target: int) -> Optional[SessionResult]:
     latest_session = conn.execute(
-        text("""
-            SELECT ws.id AS session_id, ws.started_at
-            FROM workout_logs wl
-            JOIN workout_sessions ws ON ws.id = wl.session_id
-            WHERE wl.routine_exercise_id = :reid
-            ORDER BY ws.started_at DESC LIMIT 1
-        """),
-        {"reid": routine_exercise_id},
+        text("SELECT ws.id AS session_id, ws.started_at FROM workout_logs wl JOIN workout_sessions ws ON ws.id = wl.session_id WHERE wl.routine_exercise_id = :reid ORDER BY ws.started_at DESC LIMIT 1"),
+        {"reid": routine_exercise_id}
     ).mappings().first()
-
     if latest_session is None: return None
-
-    set_logs = conn.execute(
-        text("SELECT reps_performed, rpe_score FROM workout_logs WHERE session_id = :session_id AND routine_exercise_id = :reid"),
-        {"session_id": latest_session["session_id"], "reid": routine_exercise_id},
-    ).mappings().all()
-
+    set_logs = conn.execute(text("SELECT reps_performed, rpe_score FROM workout_logs WHERE session_id = :session_id AND routine_exercise_id = :reid"), {"session_id": latest_session["session_id"], "reid": routine_exercise_id}).mappings().all()
     rpe_values = [row["rpe_score"] for row in set_logs if row["rpe_score"] is not None]
     avg_rpe = sum(rpe_values) / len(rpe_values) if rpe_values else 10.0
     hit_rep_target = all(row["reps_performed"] >= reps_target for row in set_logs)
     session_date = datetime.strptime(latest_session["started_at"].replace("T", " ")[:19], "%Y-%m-%d %H:%M:%S").date()
-
     return SessionResult(session_date=session_date, difficulty=Difficulty.from_rpe(avg_rpe), hit_rep_target=hit_rep_target)
 
 def _describe_basis(before: Prescription, after: Prescription, had_session: bool) -> str:
-    if not had_session: return "No prior session logged — holding at current prescription."
-    if after.weight > before.weight: return "Deload or weight increase applied — see weight change."
-    if after.reps_target > before.reps_target: return "Progressive overload: rep target increased."
-    if after.consecutive_easy_count == 0 and before.consecutive_easy_count > 0: return "Streak reset (last session wasn't rated easy)."
-    if after.consecutive_easy_count > before.consecutive_easy_count: return "Easy session logged — one more to trigger progression."
-    return "Holding at current prescription."
+    if not had_session: return "עדיין לא תועד אימון - נשארים בהגדרות המקוריות."
+    if after.weight > before.weight: return "הופעל דילואד או שהמשקל עלה - ראי שינוי."
+    if after.reps_target > before.reps_target: return "פרוגרסיב אוברלואד: מספר החזרות/זמן עלה."
+    if after.consecutive_easy_count == 0 and before.consecutive_easy_count > 0: return "רצף האימונים אופס (האימון האחרון לא דורג כקל)."
+    if after.consecutive_easy_count > before.consecutive_easy_count: return "אימון קל תועד - עוד אחד והמשקל או החזרות יעלו!"
+    return "נשארים בהגדרות הנוכחיות."
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
@@ -220,8 +183,8 @@ def get_next_workout(routine_id: int, current_user: dict = Depends(get_current_u
     for re_row in routine_exercises:
         config = ExerciseConfig(
             exercise_id=re_row["exercise_id"], equipment_type=EquipmentType(re_row["equipment_type"]),
-            increment_step=re_row["increment_step"], min_reps_target=re_row["min_reps_target"],
-            max_reps_target=re_row["max_reps_target"], max_weight_limit=re_row["max_weight_limit"]
+            increment_step=re_row["increment_step"], target_type=re_row.get("target_type") or "reps",
+            initial_weight=re_row["initial_weight"], initial_target=re_row["initial_target"]
         )
         current = Prescription(weight=re_row["prescribed_weight"], reps_target=re_row["prescribed_reps_target"], sets=re_row["prescribed_sets"], consecutive_easy_count=re_row["consecutive_easy_count"])
         last_session = _fetch_last_session_result(conn, re_row["routine_exercise_id"], current.reps_target)
@@ -246,19 +209,11 @@ def get_all_routines(current_user: dict = Depends(get_current_user), conn: Conne
 def get_next_in_rotation(current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     routines = conn.execute(text("SELECT id, name FROM routines WHERE user_id = :uid ORDER BY id"), {"uid": current_user["id"]}).mappings().all()
     if not routines: raise HTTPException(status_code=404, detail="No routines found")
-    
-    last_session = conn.execute(
-        text("SELECT routine_id FROM workout_sessions WHERE user_id = :uid AND routine_id IS NOT NULL ORDER BY started_at DESC LIMIT 1"),
-        {"uid": current_user["id"]}
-    ).mappings().first()
-    
-    if not last_session or not last_session["routine_id"]:
-        return {"routine_id": routines[0]["id"], "routine_name": routines[0]["name"]}
-    
+    last_session = conn.execute(text("SELECT routine_id FROM workout_sessions WHERE user_id = :uid AND routine_id IS NOT NULL ORDER BY started_at DESC LIMIT 1"), {"uid": current_user["id"]}).mappings().first()
+    if not last_session or not last_session["routine_id"]: return {"routine_id": routines[0]["id"], "routine_name": routines[0]["name"]}
     last_id = last_session["routine_id"]
     ids = [r["id"] for r in routines]
     name_map = {r["id"]: r["name"] for r in routines}
-    
     if last_id in ids:
         next_idx = (ids.index(last_id) + 1) % len(ids)
         return {"routine_id": ids[next_idx], "routine_name": name_map[ids[next_idx]]}
@@ -266,21 +221,10 @@ def get_next_in_rotation(current_user: dict = Depends(get_current_user), conn: C
 
 @app.get("/api/history")
 def get_workout_history(current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
-    sessions = conn.execute(
-        text("SELECT ws.id AS session_id, ws.started_at, ws.notes, r.name AS routine_name FROM workout_sessions ws LEFT JOIN routines r ON r.id = ws.routine_id WHERE ws.user_id = :uid ORDER BY ws.started_at DESC"),
-        {"uid": current_user["id"]}
-    ).mappings().all()
-
+    sessions = conn.execute(text("SELECT ws.id AS session_id, ws.started_at, ws.notes, r.name AS routine_name FROM workout_sessions ws LEFT JOIN routines r ON r.id = ws.routine_id WHERE ws.user_id = :uid ORDER BY ws.started_at DESC"), {"uid": current_user["id"]}).mappings().all()
     history = []
     for s in sessions:
-        logs = conn.execute(
-            text("""
-                SELECT e.name AS exercise_name, AVG(wl.weight_used) AS weight_used, AVG(wl.reps_performed) AS reps_performed, AVG(wl.rpe_score) AS rpe_score, re.target_type
-                FROM workout_logs wl JOIN routine_exercises re ON re.id = wl.routine_exercise_id JOIN exercises e ON e.id = re.exercise_id
-                WHERE wl.session_id = :sid GROUP BY e.id, e.name, re.target_type
-            """), {"sid": s["session_id"]}
-        ).mappings().all()
-
+        logs = conn.execute(text("SELECT e.name AS exercise_name, AVG(wl.weight_used) AS weight_used, AVG(wl.reps_performed) AS reps_performed, AVG(wl.rpe_score) AS rpe_score, re.target_type FROM workout_logs wl JOIN routine_exercises re ON re.id = wl.routine_exercise_id JOIN exercises e ON e.id = re.exercise_id WHERE wl.session_id = :sid GROUP BY e.id, e.name, re.target_type"), {"sid": s["session_id"]}).mappings().all()
         formatted_logs = [{"exercise_name": l["exercise_name"], "weight_used": round(l["weight_used"], 1), "reps_performed": round(l["reps_performed"]), "rpe_score": round(l["rpe_score"], 1), "target_type": l["target_type"] or "reps"} for l in logs]
         history.append({"session_id": s["session_id"], "date": s["started_at"], "routine_name": s["routine_name"] or "אימון מותאם אישית", "notes": s["notes"], "logs": formatted_logs})
     return history
@@ -290,10 +234,8 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
     try:
         existing = conn.execute(text("SELECT id FROM routines WHERE user_id = :uid AND LOWER(name) = LOWER(:name)"), {"uid": current_user["id"], "name": routine.name.strip()}).first()
         if existing: raise HTTPException(status_code=400, detail="כבר קיימת תוכנית אימון בשם הזה!")
-        
         res_routine = conn.execute(text("INSERT INTO routines (user_id, name, description) VALUES (:uid, :name, :desc) RETURNING id"), {"uid": current_user["id"], "name": routine.name.strip(), "desc": routine.description})
         routine_id = res_routine.scalar()
-
         for idx, ex in enumerate(routine.exercises, start=1):
             exercise_row = conn.execute(text("SELECT id FROM exercises WHERE LOWER(name) = LOWER(:name)"), {"name": ex.exercise_name}).mappings().first()
             if exercise_row:
@@ -301,12 +243,10 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
             else:
                 res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets) RETURNING id"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
                 exercise_id = res_ex.scalar()
-
             conn.execute(
-                text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"),
+                text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type, initial_weight, initial_target) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype, :weight, :reps)"),
                 {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type}
             )
-
         conn.commit()
         return {"id": routine_id, "message": "Routine created"}
     except HTTPException:
@@ -319,8 +259,7 @@ def create_routine(routine: RoutineCreate, current_user: dict = Depends(get_curr
 @app.post("/api/routines/delete_batch")
 def delete_routines_batch(payload: RoutineDeleteBatch, current_user: dict = Depends(get_current_user), conn: Connection = Depends(get_db)):
     try:
-        for rid in payload.routine_ids:
-            conn.execute(text("DELETE FROM routines WHERE id = :rid AND user_id = :uid"), {"rid": rid, "uid": current_user["id"]})
+        for rid in payload.routine_ids: conn.execute(text("DELETE FROM routines WHERE id = :rid AND user_id = :uid"), {"rid": rid, "uid": current_user["id"]})
         conn.commit()
         return {"message": "Selected routines deleted"}
     except Exception as e:
@@ -337,13 +276,11 @@ def complete_workout(routine_id: int, workout: WorkoutSubmit, current_user: dict
         _fetch_routine(conn, routine_id, current_user["id"])
         res_session = conn.execute(text("INSERT INTO workout_sessions (user_id, routine_id, notes) VALUES (:uid, :rid, :notes) RETURNING id"), {"uid": current_user["id"], "rid": routine_id, "notes": workout.notes})
         session_id = res_session.scalar()
-        
         for ex in workout.exercises:
-            for s in ex.logs:
-                conn.execute(text("INSERT INTO workout_logs (session_id, routine_exercise_id, set_number, reps_performed, weight_used, rpe_score) VALUES (:sid, :reid, :snum, :reps, :weight, :rpe)"), {"sid": session_id, "reid": ex.routine_exercise_id, "snum": s.set_number, "reps": s.reps_performed, "weight": s.weight_used, "rpe": s.rpe_score})
+            for s in ex.logs: conn.execute(text("INSERT INTO workout_logs (session_id, routine_exercise_id, set_number, reps_performed, weight_used, rpe_score) VALUES (:sid, :reid, :snum, :reps, :weight, :rpe)"), {"sid": session_id, "reid": ex.routine_exercise_id, "snum": s.set_number, "reps": s.reps_performed, "weight": s.weight_used, "rpe": s.rpe_score})
             re_row = conn.execute(text("SELECT re.*, e.* FROM routine_exercises re JOIN exercises e ON e.id = re.exercise_id WHERE re.id = :reid"), {"reid": ex.routine_exercise_id}).mappings().first()
             if re_row:
-                config = ExerciseConfig(exercise_id=re_row["id"], equipment_type=EquipmentType(re_row["equipment_type"]), increment_step=re_row["increment_step"], min_reps_target=re_row["min_reps_target"], max_reps_target=re_row["max_reps_target"], max_weight_limit=re_row["max_weight_limit"])
+                config = ExerciseConfig(exercise_id=re_row["id"], equipment_type=EquipmentType(re_row["equipment_type"]), increment_step=re_row["increment_step"], target_type=re_row["target_type"], initial_weight=re_row["initial_weight"], initial_target=re_row["initial_target"])
                 current = Prescription(weight=re_row["prescribed_weight"], reps_target=re_row["prescribed_reps_target"], sets=re_row["prescribed_sets"], consecutive_easy_count=re_row["consecutive_easy_count"])
                 avg_rpe = sum([s.rpe_score for s in ex.logs]) / len(ex.logs) if ex.logs else 10.0
                 last_session = SessionResult(session_date=date.today(), difficulty=Difficulty.from_rpe(avg_rpe), hit_rep_target=all(s.reps_performed >= current.reps_target for s in ex.logs))
@@ -376,7 +313,7 @@ def update_routine(routine_id: int, payload: RoutineUpdate, current_user: dict =
             else:
                 res_ex = conn.execute(text("INSERT INTO exercises (name, equipment_type, increment_step, min_reps_target, max_reps_target, default_sets) VALUES (:name, :equip, :step, 8, 12, :sets) RETURNING id"), {"name": ex.exercise_name, "equip": ex.equipment_type, "step": ex.increment_step, "sets": ex.prescribed_sets})
                 exercise_id = res_ex.scalar()
-            conn.execute(text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype)"), {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type})
+            conn.execute(text("INSERT INTO routine_exercises (routine_id, exercise_id, display_order, prescribed_weight, prescribed_reps_target, prescribed_sets, target_type, initial_weight, initial_target) VALUES (:rid, :eid, :order, :weight, :reps, :sets, :ttype, :weight, :reps)"), {"rid": routine_id, "eid": exercise_id, "order": idx, "weight": ex.prescribed_weight, "reps": ex.prescribed_reps_target, "sets": ex.prescribed_sets, "ttype": ex.target_type})
         conn.commit()
         return {"message": "Routine updated"}
     except HTTPException:
