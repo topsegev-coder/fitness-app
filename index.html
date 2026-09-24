@@ -688,7 +688,7 @@
                     <label style="font-size:13px;">שם התרגיל</label>
                     <input type="text" class="ex-name" placeholder="לדוגמה: סקוואט" value="${data?data.exercise_name:''}" autocomplete="off">
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div style="display:grid; grid-template-columns: 3fr 2fr; gap:10px; margin-bottom:12px;">
                     <div style="text-align: right;">
                         <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סוג ציוד</label>
                         <select class="ex-equipment" onchange="updateDefaultStep(this)" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
@@ -716,7 +716,7 @@
                             <input type="checkbox" class="ex-target-switch" ${isTime?'checked':''} onchange="toggleTargetType(this)">
                             <span class="slider"></span>
                         </label>
-                        <label class="target-label" style="margin:0;font-size:13px;font-weight:bold;color:#334155;">${isTime?'זמן (שניות)':'חזרות'}</label>
+                        <label class="target-label" style="margin:0;font-size:13px;font-weight:bold;color:#334155;">${isTime?'משך זמן בשניות':'מספר חזרות'}</label>
                     </div>
                     <input type="number" class="ex-reps" value="${data?data.prescribed_reps_target:10}" min="1" style="width:60px; padding:6px; border:1px solid #cbd5e1; border-radius:6px; text-align:center; font-family:inherit;">
                 </div>
@@ -756,7 +756,7 @@
                     <label style="font-size:13px;">שם התרגיל</label>
                     <input type="text" class="ex-name" placeholder="לדוגמה: סקוואט" value="${data?data.exercise_name:''}" autocomplete="off">
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div style="display:grid; grid-template-columns: 3fr 2fr; gap:10px; margin-bottom:12px;">
                     <div style="text-align: right;">
                         <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">סוג ציוד</label>
                         <select class="ex-equipment" onchange="updateDefaultStep(this)" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-family:inherit;">
@@ -784,7 +784,7 @@
                             <input type="checkbox" class="ex-target-switch" ${isTime?'checked':''} onchange="toggleTargetType(this)">
                             <span class="slider"></span>
                         </label>
-                        <label class="target-label" style="margin:0;font-size:13px;font-weight:bold;color:#334155;">${isTime?'זמן (שניות)':'חזרות'}</label>
+                        <label class="target-label" style="margin:0;font-size:13px;font-weight:bold;color:#334155;">${isTime?'משך זמן בשניות':'מספר חזרות'}</label>
                     </div>
                     <input type="number" class="ex-reps" value="${data?data.prescribed_reps_target:10}" min="1" style="width:60px; padding:6px; border:1px solid #cbd5e1; border-radius:6px; text-align:center; font-family:inherit;">
                 </div>
@@ -829,7 +829,7 @@
         }
 
         function toggleTargetType(cb) { 
-            cb.closest('.exercise-form-box').querySelector('.target-label').innerText = cb.checked ? 'שניות' : 'חזרות'; 
+            cb.closest('.exercise-form-box').querySelector('.target-label').innerText = cb.checked ? 'משך זמן בשניות' : 'מספר חזרות'; 
         }
         
         function updateDefaultStep(sel) { 
