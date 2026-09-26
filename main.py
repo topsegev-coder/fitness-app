@@ -157,7 +157,8 @@ def _fetch_last_session_result(conn: Connection, routine_exercise_id: int, reps_
     rpe_values = [row["rpe_score"] for row in set_logs if row["rpe_score"] is not None]
     avg_rpe = sum(rpe_values) / len(rpe_values) if rpe_values else 10.0
     hit_rep_target = all(row["reps_performed"] >= reps_target for row in set_logs)
-    session_date = datetime.strptime(latest_session["started_at"].replace("T", " ")[:19], "%Y-%m-%d %H:%M:%S").date()
+    # session_date = datetime.strptime(latest_session["started_at"].replace("T", " ")[:19], "%Y-%m-%d %H:%M:%S").date()
+    session_date = datetime.strptime(str(latest_session).replace("T", " ")[:19], "%Y-%m-%d %H:%M:%S").date()
     return SessionResult(session_date=session_date, difficulty=Difficulty.from_rpe(avg_rpe), hit_rep_target=hit_rep_target)
 
 def _describe_basis(before: Prescription, after: Prescription, had_session: bool) -> str:
